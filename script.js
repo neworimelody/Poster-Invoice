@@ -16,3 +16,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+
+export const addOrder = async function(order){
+  const docRef = await addDoc(collection(db, "invoices"), {
+    orderName: order,
+    isCompleted: false,
+  });
+
+  document.getElementById("orderName").value = "";
+  
+}
