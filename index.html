@@ -10,12 +10,13 @@
     <body>
         <script type="module" src="script.js"></script>
         <script type="module">
-        // import {addItem, showItems} from './script.js';
-        // window.addItem = addItem;
+        import {addOrder} from './script.js';
+        window.addOrder = addOrder;
         // window.showItems = showItems;
   </script>
 
+  <input type="=text" id="orderName">
+    <button onclick="addItem(document.getElementById('orderName').value);">Add Order</button>
 
     </body>
 </html>
-
