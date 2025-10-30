@@ -26,6 +26,9 @@ hr.solid {
     font-family: "Open Sans", sans-serif;
     font-size: 80%;
 }
+.highlight{
+    color: #ff0000;
+}
 
 .row{
     display: flex;
