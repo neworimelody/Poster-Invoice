@@ -59,6 +59,7 @@ hr.solid {
     font-family: "Open Sans", sans-serif;
     font-size: 16px;
     border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
 .checkbox input[type ="radio"]:checked + label{
@@ -66,6 +67,7 @@ hr.solid {
 }
 .checkbox label:hover{
     cursor: pointer;
+    background-color:#cd0000
 }
 .half4{
     display: flex;
@@ -101,13 +103,17 @@ hr.solid {
 }
 
 button{
-    color: white;
-    display: inline-block;
-    background-color: #B01111;
-    border: #B01111;
-    padding: 12px 23px;
-    font-family: "Open Sans", sans-serif;
+    display: block;
+    margin: 10px auto; /* centers horizontally */
+    padding: 15px 25px;
     font-size: 16px;
+    cursor: pointer;
+    background-color: #B01111;
+    color: white;
+    border: none;
     border-radius: 4px;
-    margin: 1px;
+    transition: all 0.5s ease;
+}
+button:hover{
+    background-color: #7fa8e6;
 }
