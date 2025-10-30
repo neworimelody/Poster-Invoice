@@ -3,8 +3,12 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
-        <title>index</title>
-        <link href="style.css" rel="stylesheet" type="text/css" />
+        <title>Create Invoice</title>
+        <link href="place-order-style.css" rel="stylesheet" type="text/css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Caprasimo&family=Gravitas+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playpen+Sans:wght@100..800&family=Rubik+Doodle+Shadow&family=Titan+One&family=Ysabeau+Infant:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+
     </head>
 
     <body>
@@ -19,8 +23,83 @@
     <button onclick="addItem(document.getElementById('orderName').value);">Add Order</button> -->
 
     </body>
+    <center>
+         <div class = "rectangle"> 
+            <h1>
+                Submit Order 
+            </h1>
+            <hr class="solid">
+            
+            <div class="row">
+                <div class="half">
+                <label class = "inputs">Title* </label>
+                <br>
+                <input style = "height: 30px; width: 90%; font-size: 100%; font-family: 'Open Sans', sans-serif;"  type = "text" id = "title"> 
+                </div>
+                <div class="half">
+                <label class = "inputs">Date Invoiced*</label>
+                <br>
+                <input style = "height: 30px; width: 50%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = date id = "date">
+                </div>
+            </div>
+            <br>
+            
+            <div class = "row">
+                <div class = "half2">
+                    <div><label class = "inputs">Width*</label></div>
+                    <div><input style = "height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "width"> in</div>
+                </div>
+                <div class = "half2">
+                    <div><label class = "inputs">Height*</label></div>
+                    <div><input style = "height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "width"> in</div>
+                </div>
+                <div class = "half3">
+                    <label class = "inputs">Mounting*</label>
+                    <br>
+                    <div class="checkbox"><input name="mounting" type = "radio" id="foamBoard"><label for="foamBoard">Foam Board</label>
+                    <input name="mounting" type = "radio" id="matBoard"><label for="matBoard">Mat Board</label>
+                    <input name = "mounting" type = "radio" id = "none"><label for="none">None</label>
+                    </div>
+                </div>
+            </div>
+            <br>
 
+            <div class = "row">
+                <div class = "half4">
+                    <div><label class = "inputs">Quantity*</label></div>
+                    <div><input style = "height: 30px; width: 50%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "quantity"></div>
+                </div>
+                <div class = "half4">
+                    <div><label class = "inputs">Bill To*</label></div>
+                    <div><input style = "height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "bill"></div>
+                </div>
+                <div class = "half4">
+                    <div><label class = "inputs">Request From*</label></div>
+                    <div><input style = "height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "requestFrom"></div>
+                </div>
+            </div>
+            <br>
+
+            <div class = "row">
+                <div class = "desc">
+                    <div><label class = "inputs">Description</label>
+                    <textarea id="description"></textarea> </div>
+                </div>
+            </div>
+            
+            <div class = "row">
+                <button id = "submit-order"> Submit Order to Invoice</button>
+                <button id = "add-to-order"> Add to Order</button>
+            </div>
+        </div>
+           
+        </center>
+        </div>
+
+ 
+       
     
 
     
 </html>
+
