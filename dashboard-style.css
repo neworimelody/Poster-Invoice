@@ -21,6 +21,7 @@ ul {
     padding: 0;
     overflow: hidden;
     background-color: #ffffff;
+    border-radius: 40px;
   }
   
   ul li {
@@ -34,10 +35,10 @@ ul {
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    transition: all 0.5s ease;
   }
   
   ul li a:hover {
     background-color: #e8e4e4;
+
   }
-
-
