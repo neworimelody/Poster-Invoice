@@ -14,7 +14,6 @@ h1{
     height: 716px;
     border-radius: 30px;
     padding: 2%;
-    padding-left: 4%;
     text-align: left;
     font-family: "Open Sans", sans-serif;
     font-size: 120%;
@@ -32,6 +31,8 @@ hr.solid {
 
 .row{
     display: flex;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .half{
@@ -66,17 +67,18 @@ hr.solid {
 }
 
 .checkbox input[type ="radio"]:checked + label{
-    background-color:#7fa8e6
+    background-color:#700000
 }
 .checkbox label:hover{
     cursor: pointer;
-    background-color:#cd0000
+    background-color:#c36464
 }
 .half4{
     display: flex;
     flex-direction: column;
     font-size: 100%; 
     font-family: "Open Sans", sans-serif;
+    width:100%;
 }
 .desc {
   width: 100%;
@@ -118,5 +120,5 @@ button{
     transition: all 0.5s ease;
 }
 button:hover{
-    background-color: #7fa8e6;
+    background-color: #700000
 }
