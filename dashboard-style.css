@@ -31,45 +31,12 @@ ul {
   ul li a {
     display: block;
     color: rgb(8, 0, 0);
-    margin-left: 444px;
+    margin-left: 286px;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    transition: all 0.5s ease;
   }
   
   ul li a:hover {
     background-color: #e8e4e4;
-
-  }
-/* Admin */
-  .blank-box{
-    width: 40%; 
-    height: 50%;
-    background-color: #ffffff;
-    margin: auto;
-    margin-top: 90px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-  .editprices{
-    background-color: #B01111;
-    width: 17vh;
-    height: 7vh
-  }
-  .editprices p{
-    color: #ffffff;
-    text-align: center;
-    font-size: 3vh;
-    margin-top: 1.4vh;
-
-  }
-  .material{
-    margin-left: 1vh;
-  }
-  .typing-box{
-    width: 20vh;
-    height: 3vh;
-    border: 0.2vh solid black;
   }
