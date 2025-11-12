@@ -14,15 +14,12 @@
     <body>
         <script type="module" src="script.js"></script>
         <script type="module">
-        // import {addOrder} from './script.js';
-        // window.addOrder = addOrder;
+        import {createInvoice} from './script.js';
+        window.createInvoice = createInvoice;
         // window.showItems = showItems;
   </script>
 
-  <!-- <input type="=text" id="orderName">
-    <button onclick="addItem(document.getElementById('orderName').value);">Add Order</button> -->
 
-    </body>
     <center>
          <div class = "rectangle"> 
             <h1>
@@ -51,7 +48,7 @@
                 </div>
                 <div class = "half2">
                     <div><label class = "inputs">Height<span class="highlight">*</span></label></div>
-                    <div><input style = "height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "width"> in</div>
+                    <div><input style = "height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "height"> in</div>
                 </div>
                 <div class = "half3">
                     <label class = "inputs">Mounting<span class="highlight">*</span></label>
@@ -70,11 +67,11 @@
                     <div><input style = "height: 30px; width: 50%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "quantity"></div>
                 </div>
                 <div class = "half4">
-                    <div><label class = "inputs">Bill To<span class="highlight">*</span></label></div>
+                    <div><label class = "inputs">Bill To (Department)<span class="highlight">*</span></label></div>
                     <div><input style = "height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "bill"></div>
                 </div>
                 <div class = "half4">
-                    <div><label class = "inputs">Request From<span class="highlight">*</span></label></div>
+                    <div><label class = "inputs">Requested By<span class="highlight">*</span></label></div>
                     <div><input style = "height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "requestFrom"></div>
                 </div>
             </div>
@@ -88,15 +85,14 @@
             </div>
             
             <div class = "row">
-                <button id = "submit-order"> Submit Order to Invoice</button>
+                <button onclick= "createInvoice();" id = "submit-order"> Submit Order to Invoice</button>
                 <button id = "add-to-order"> Add to Order</button>
             </div>
         </div>
            
         </center>
         </div>
-
- 
+    </body>
        
     
 
