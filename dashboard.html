@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,10 +14,10 @@
     <body>
         <script type="module" src="script.js"></script>
         <script type="module">
-        // import {addOrder} from './script.js';
-        // window.addOrder = addOrder;
+        import {showOrders} from './script.js';
+        window.showOrders = showOrders;
         // window.showItems = showItems;
-
+            showOrders();
   </script>
 
   <!-- <input type="=text" id="orderName">
@@ -27,7 +28,7 @@
         <li><a href="admin.html">Admin</a></li>
       </ul>
 
-    <section class="introduction">
+    <section class="introduction" id="orders">
         <p>
             You currently have no invoices. Click create invoice to create one.
         </p>
@@ -39,3 +40,4 @@
 
     
 </html>
+
