@@ -1,12 +1,32 @@
+
 body{
     background-color: #f5f5f5;
     font-family: "Open Sans", sans-serif;
 
 }
 
+.orderTile{
+    display: flex;
+    margin: 10px auto; /* centers horizontally */
+    align-items:flex-start;
+    padding: 45px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    justify-content: space-around;
+    display: inline-block;
+    width: 8%; /* Adjust width as needed */
+    height: 30%
+}
+.orderTile:hover{
+    box-shadow: 2px 2px 0px 2px #c36464;
+}
+
 .introduction
 {
-    height: 500px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -18,7 +38,7 @@ body{
 ul {
     list-style-type: none;
     margin: 0;
-    padding: 0;
+    padding: 10px;
     overflow: hidden;
     background-color: #ffffff;
     border-radius: 40px;
@@ -31,12 +51,18 @@ ul {
   ul li a {
     display: block;
     color: rgb(8, 0, 0);
-    margin-left: 286px;
+    margin-left: 260px;
     text-align: center;
+    align-items: center;
+    justify-content: space-around;
     padding: 14px 16px;
     text-decoration: none;
+    transition: all 0.3s ease;
+
   }
   
   ul li a:hover {
-    background-color: #e8e4e4;
+    border-radius: 4px;
+    background-color: #c36464;
+    color:#ffffff
   }
