@@ -21,6 +21,7 @@ ul {
     padding: 0;
     overflow: hidden;
     background-color: #ffffff;
+    border-radius: 40px;
   }
   
   ul li {
@@ -43,44 +44,98 @@ ul {
  
  /* Admin */
  .blank-box{
-    width: 40%; 
-    height: 50%;
+    width: 75%;
     background-color: #ffffff;
-    margin: auto;
-    margin-top: 90px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    border-radius: 30px;
+    margin: 90px auto;
+    padding: 40px 60px;
+    border-radius: 25px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   }
   .editprices{
-    background-color: #B01111;
-    width: 17vh;
-    height: 7vh
+    background: linear-gradient(135deg, #B01111, #D22B2B);
+    width: fit-content;
+    padding: 12px 30px;
+    border-radius: 18px;
+    margin: 30px 0 20px 0px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   }
   .editprices p{
     color: #ffffff;
-    text-align: center;
-    font-size: 3vh;
-    margin-top: 1.4vh;
-
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 0;
+    letter-spacing: 0.5px;
+    font-family: "Montserrat", sans-serif;
   }
   .material {
-    margin-left: 1vh;
-    line-height: 2.5rem;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 20px;
   }
   
-  .material label {
-    display: inline-block;
-    width: 130px;
+  .row {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
     font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  .input-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 20px;
+  }
+  
+  .field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .label {
+    font-size: 13px;
+    margin-bottom: 5px;
+    color: #333;
   }
   
   .typing-box {
-    width: 180px;
-    height: 28px;
+    width: 90%;
+    height: 30px;
     border: 1.5px solid #020101;
     padding-left: 8px;
     transition: 0.2s ease;
   }
+  button {
+    align-self: center;
+    width: 200px;
+    height: 45px;
+    background: linear-gradient(135deg, #B01111, #D22B2B);
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    margin: 30px auto 50px auto;
+  }
+  button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #9d0f0f, #c41f1f);
+  box-shadow: 0 6px 14px rgba(176, 17, 17, 0.35);
+}
+.result {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #010000;
+    font-weight: 500;
+    background-color: #f9f9f9;
+    padding: 6px 10px;
+    border-left: 6px solid #B01111;
+    border-radius: 6px;
+    width: fit-content;
+}
