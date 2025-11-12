@@ -12,25 +12,109 @@
 
     <body>
         <script type="module" src="script.js"></script>
-        <script type="module"></script>
+        <script type="module">
+             import {addPrice} from './script.js';
+            window.addPrice = addPrice;
+        
+
+        </script>
 
         <ul>
             <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="invoice.html">Create Invoice</a></li>
-            <li><a href="Admin.html">Admin</a></li>
+            <li><a href="place-order.html">Create Invoice</a></li>
+            <li><a href="admin.html">Admin</a></li>
           </ul>
         <div class="blank-box">
             <div class = "editprices">
                 <p>Edit prices</p>
             </div>
-            <div class = "material">
-                <label>Epson paper:</label><input class="typing-box"> <br><br>
-                <label>Foam Board:</label><input class="typing-box"><br><br>
-                <label>Matboard:</label><input class="typing-box"><br><br>
-                <label>Ink:</label><input class="typing-box">
-                </p>
-            </div>
-            
+            <div class="material">
+                <div class="row">
+                  <label>Epson paper:</label>
+                  <div class="input-group">
+                    <div class="field">
+                      <div class="label">Width (IN)</div>
+                      <input class="typing-box" id="epson-width">
+                    </div>
+                    <div class="field">
+                      <div class="label">Length (IN)</div>
+                      <input class="typing-box" id="epson-length">
+                    </div>
+                    <div class="field">
+                      <div class="label">Price ($)</div>
+                      <input class="typing-box" id="epson-price">
+                    </div>
+                  </div>
+                  <div class="result" id="epson-result">Calculated price: </div>
+                </div>
+              
+                <div class="row">
+                  <label>Foam Board:</label>
+                  <div class="input-group">
+                    <div class="field">
+                      <div class="label">Width (IN)</div>
+                      <input class="typing-box" id="foam-width">
+                    </div>
+                    <div class="field">
+                      <div class="label">Length (IN)</div>
+                      <input class="typing-box" id="foam-length">
+                    </div>
+                    <div class="field">
+                      <div class="label">Quantity (sheets)</div>
+                      <input class="typing-box" id="foam-qty(sheets)">
+                    </div>
+                    <div class="field">
+                      <div class="label">Price ($)</div>
+                      <input class="typing-box" id="foam-price">
+                    </div>
+                  </div>
+                  <div class="result" id="foam-result">Calculated price: </div>
+                </div>
+              
+                <div class="row">
+                  <label>Matboard:</label>
+                  <div class="input-group">
+                    <div class="field">
+                      <div class="label">Width (IN)</div>
+                      <input class="typing-box" id="mat-width">
+                    </div>
+                    <div class="field">
+                      <div class="label">Length (IN)</div>
+                      <input class="typing-box" id="mat-length">
+                    </div>
+                    <div class="field">
+                      <div class="label">Quantity (sheets)</div>
+                      <input class="typing-box" id="mat-qty(sheets)">
+                    </div>
+                    <div class="field">
+                      <div class="label">Price ($)</div>
+                      <input class="typing-box" id="mat-price">
+                    </div>
+                  </div>
+                  <div class="result" id="mat-result">Calculated price: </div>
+                </div>
+              
+                <div class="row">
+                  <label>Ink:</label>
+                  <div class="input-group">
+                    <div class="field">
+                      <div class="label">Quantity (ml)</div>
+                      <input class="typing-box" id="ink-qty(ml)">
+                    </div>
+                    <div class="field">
+                      <div class="label">Price ($)</div>
+                      <input class="typing-box" id="ink-price">
+                    </div>
+                    <div class="field">
+                      <div class="label">Consumption (per sq in)</div>
+                      <input class="typing-box" id="consumption-perSqIn">
+                    </div>
+                  </div>
+                </div>
+                <div class="result" id="ink-result">Calculated price: </div>
+              </div>
+              
+            <button onclick="addPrice()">SAVE</button>
         </div>
     </body>
     </html>
