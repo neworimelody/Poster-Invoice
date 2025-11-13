@@ -1,43 +1,99 @@
-
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
-        <title>Dashboard</title>
-        <link href="dashboard-style.css" rel="stylesheet" type="text/css" />
+        <title>Invoice PDF</title>
+        <link href="output-style.css" rel="stylesheet" type="text/css" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Caprasimo&family=Gravitas+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playpen+Sans:wght@100..800&family=Rubik+Doodle+Shadow&family=Titan+One&family=Ysabeau+Infant:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
     </head>
-
-    <body>
-        <script type="module" src="script.js"></script>
-        <script type="module">
-        import {showOrders} from './script.js';
-        window.showOrders = showOrders;
-        // window.showItems = showItems;
-            showOrders();
-  </script>
-
-  <!-- <input type="=text" id="orderName">
-    <button onclick="addItem(document.getElementById('orderName').value);">Add Order</button> -->
-    <ul>
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="place-order.html">Create Invoice</a></li>
-        <li><a href="admin.html">Admin</a></li>
-      </ul>
-
-    <section class="introduction" id="orders">
-        <p>
-            You currently have no invoices. Click create invoice to create one.
-        </p>
-    </section>
-
-
-
-    </body>
-
     
-</html>
+    <script type="module" src="script.js"></script>
+        <script type="module">
+        import {createPDF} from './script.js';
+        window.createPDF = createPDF;
+        createPDF();
+    </script>
 
+<body>
+    
+    
+    <center>
+
+
+    <div class = "orderPDF"> 
+        <h1 class>
+            Invoice
+        </h1>
+        <hr class = "solid">
+        <br>
+
+        <div class = "row">
+            <div>
+                <label class="label">Issued to:</label>
+                <p id = "issued-to"></p>
+            </div>
+
+            <div>
+                <label class="label">Date: </label>
+                <p id = "date"></p>
+            </div>
+        </div>
+
+        <div class = "row2">
+            <div>
+                <label class="label">Requested By:</label>
+                <p id = "requested-by"></p>
+            </div>
+
+            <div>
+                <label class="label">Bill To:</label>
+                <p id = "requested-by">00000000000</p>
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class = row3>
+            <div>
+                <label class="label">
+                    Title
+                </label>
+                <hr class = solid>
+                <p id = "title"></p>
+            </div>
+
+            <div>
+                <label class = "label">
+                    QTY
+                </label>
+                <hr class = solid>
+                <p id = "quantity">10000</p>
+            </div>
+
+            <div>
+                <label class = "label">
+                    Amount (per item)
+                </label>
+                <hr class = solid>
+                <p id = "amount">0.003</p>
+            </div>
+        </div>
+       
+        
+        <div class = "title-output">
+
+        </div>
+        <hr class = solid>
+        <p class="label">
+            Total:
+        </p>
+        <p id = total></p>
+
+    </div>
+    </center>
+</body>
