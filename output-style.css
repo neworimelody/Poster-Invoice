@@ -2,13 +2,14 @@
 body{
     background-color: #f5f5f5;
     font-family: "Open Sans", sans-serif;
+   
 }
 
 .orderPDF{
     background-color: white;
     margin: 2%;
     width: 686px;
-    height: 800px;
+    min-height: 800px;
     border-radius: 30px;
     padding: 2%;
     text-align: left;
@@ -18,20 +19,13 @@ body{
 hr.solid{
     border-top: 3px solid  rgb(245, 245, 245);
 }
-#issued-to{
+
+.label{
+    font-weight: 600;
     font-family: "Open Sans", sans-serif;
-    font-weight: 600;
 }
-#date{
-    margin-left: 50%;
-    font-weight: 600;
-}
-#bill-to{
-    font-weight: 600;
-}
-#title{
-    font-weight: 600;
-}
+
+
 .title-output{
     width: 100px;
     height: 300px;
@@ -48,7 +42,19 @@ hr.solid{
 #total{
     margin-left: 80%;
 }
-.issuedNameOutput{
-    font-size: 16px;
-    font-weight: 400;
+
+.row{
+    display: flex;
+    width: 60%;
+    justify-content: space-between;
+}
+.row2{
+     display: flex;
+    width: 63%;
+    justify-content: space-between;
+}
+.row3{
+    display: flex;
+    width: 80%;
+    justify-content: space-between;
 }
