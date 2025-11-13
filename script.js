@@ -173,32 +173,42 @@ export const showOrders = async function(){
 export const createPDF = async function(){
     const orderID = sessionStorage.getItem("orderID");
     console.log(orderID);
-    const issuedTo = document.getElementById("issued-to");
+    // const issuedTo = document.getElementById("issued-to");
 
     // issuedTo.innerHTML = "";
     const docRef = doc(db,  "invoices", orderID);
     const docSnap = await getDoc(docRef);
    
-    // const addToDashboard = document.getElementById("submit-order")
-    // addToDashboard.onclick = async function(){
-    //   await updateDoc(doc(db, "rectangle", item.id), {
-    //     isCompleted: true
-    //   });
-    //   showItems();
-    // }
 
     const issuedNameOutput = document.createElement("div");
     issuedNameOutput.className = "issuedNameOutput";
-
-    const issuedName = document.createElement("p");
+    const issuedName = document.getElementById("issued-to");
     issuedName.innerHTML = docSnap.data().bill;
 
-    issuedNameOutput.appendChild(issuedName);
+    // issuedNameOutput.appendChild(issuedName);
+    // issuedTo.appendChild(issuedNameOutput);
 
-    issuedTo.appendChild(issuedNameOutput);
+    const date = document.getElementById("date");
+    // const dateOutput = document.createElement("div");
+    // dateOutput.className = "dateOutput";
+    // const dateP = document.createElement("p");
+    date.innerHTML = docSnap.data().date;
 
- 
-    
+    // dateOutput.appendChild(dateP);
+    // date.appendChild(dateOutput);
+
+    const requested = document.getElementById("requested-by");
+    // const requestedOutput = document.createElement("div");
+    // requestedOutput.className = "requestedOutput";
+    // const requestedP = document.createElement("p");
+    requested.innerHTML = docSnap.data().requestFrom;
+
+    // requestedOutput.appendChild(requestedP);
+    // requested.appendChild(requestedOutput);
+
+    const title = document.getElementById("title");
+    title.innerHTML = docSnap.data().title;
+
 
 }
 
