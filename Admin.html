@@ -13,9 +13,10 @@
     <body>
         <script type="module" src="script.js"></script>
         <script type="module">
-             import {addPrice} from './script.js';
+             import {addPrice, showPrices} from './script.js';
             window.addPrice = addPrice;
-        
+            window.showPrices = showPrices;
+            showPrices();
 
         </script>
 
