@@ -42,8 +42,8 @@ export const addPrice = async function(){
     var inkConsumptionPerSqIn = document.getElementById("consumption-perSqIn").value;
     var inkPricePerSqIn = (inkCost/inkQTY)*inkConsumptionPerSqIn;
 
-
-  const docRef = await addDoc(collection(db, "prices"), {
+  const pricesDoc = doc(db,"prices","prices")
+  await updateDoc(pricesDoc, {
     epsonPricePerSqIn: epsonPricePerSqIn,
     foamPricePerSqIn: foamPricePerSqIn,
     matPricePerSqIn: matPricePerSqIn,
@@ -68,17 +68,31 @@ export const addPrice = async function(){
   document.getElementById("ink-price").value = "";
   document.getElementById("consumption-perSqIn").value = "";
   
+  showPrices();
+ 
+}
+
+
+export const showPrices = async function(){
+    const docRef = doc(db, "prices", "prices");
+    const docSnap = await getDoc(docRef);
+
 
   document.getElementById("epson-result").innerText = 
-  "Calculated price: $" + epsonPricePerSqIn.toFixed(6) + " per sq in";
-document.getElementById("foam-result").innerText = 
-  "Calculated price: $" + foamPricePerSqIn.toFixed(6) + " per sq in";
-document.getElementById("mat-result").innerText = 
-  "Calculated price: $" + matPricePerSqIn.toFixed(6) + " per sq in";
-document.getElementById("ink-result").innerText = 
-  "Calculated price: $" + inkPricePerSqIn.toFixed(6) + " per sq in";
+  "Calculated price: $" + docSnap.data().epsonPricePerSqIn.toFixed(6) + " per sq in";
+  document.getElementById("foam-result").innerText = 
+  "Calculated price: $" + docSnap.data().foamPricePerSqIn.toFixed(6) + " per sq in";
+  document.getElementById("mat-result").innerText = 
+  "Calculated price: $" + docSnap.data().matPricePerSqIn.toFixed(6) + " per sq in";
+  document.getElementById("ink-result").innerText = 
+  "Calculated price: $" + docSnap.data().inkPricePerSqIn.toFixed(6) + " per sq in";
 
 }
+
+
+
+
+
 
 export const createInvoice = async function(){
     var title = document.getElementById("title").value;
