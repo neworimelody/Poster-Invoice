@@ -1,3 +1,4 @@
+
 // Import Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 // TODO: import libraries for Cloud Firestore Database
@@ -88,7 +89,6 @@ export const showPrices = async function(){
   "Calculated price: $" + docSnap.data().inkPricePerSqIn.toFixed(6) + " per sq in";
 
 }
-
 
 
 
