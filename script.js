@@ -1,4 +1,3 @@
-
 // Import Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 // TODO: import libraries for Cloud Firestore Database
@@ -88,6 +87,39 @@ export const showPrices = async function(){
   document.getElementById("ink-result").innerText = 
   "Calculated price: $" + docSnap.data().inkPricePerSqIn.toFixed(6) + " per sq in";
 
+}
+
+export const calculatePrice = async function(){
+    const orderID = sessionStorage.getItem("orderID");
+    console.log(orderID);
+    // const issuedTo = document.getElementById("issued-to");
+    // issuedTo.innerHTML = "";
+    const orderRef = doc(db,  "invoices", orderID);
+    const orderSnap = await getDoc(orderRef);
+
+    const pricesRef = doc(db, "prices", "prices");
+    const pricesSnap = await getDoc(pricesRef);
+
+    var quantity = orderSnap.data().quantity;
+    var width = orderSnap.data().width;
+    var height = orderSnap.data().height;
+    var mounting = orderSnap.data().mounting
+    var epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn.toFixed(6);
+    var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn.toFixed(6);
+    var matPricePerSqIn = pricesSnap.data().matPricePerSqIn.toFixed(6);
+    var inkPricePerSqIn = pricesSnap.data().inkPricePerSqIn.toFixed(6);
+   var priceEach = 0;
+    if (mounting=="Foam Board"){
+        priceEach = width*height*foamPricePerSqIn;
+        priceEach += width*height*inkPricePerSqIn;
+        priceEach += width*height*epsonPricePerSqIn;
+    }
+    else if(mounting == "Mat Board"){
+        priceEach = width*height*matPricePerSqIn;
+        priceEach += width*height*inkPricePerSqIn;
+        priceEach += width*height*epsonPricePerSqIn;
+    }
+    var totalPrice = priceEach * quantity;
 }
 
 
