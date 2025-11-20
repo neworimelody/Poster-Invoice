@@ -89,42 +89,6 @@ export const showPrices = async function(){
 
 }
 
-export const calculatePrice = async function(){
-    const orderID = sessionStorage.getItem("orderID");
-    console.log(orderID);
-    // const issuedTo = document.getElementById("issued-to");
-    // issuedTo.innerHTML = "";
-    const orderRef = doc(db,  "invoices", orderID);
-    const orderSnap = await getDoc(orderRef);
-
-    const pricesRef = doc(db, "prices", "prices");
-    const pricesSnap = await getDoc(pricesRef);
-
-    var quantity = orderSnap.data().quantity;
-    var width = orderSnap.data().width;
-    var height = orderSnap.data().height;
-    var mounting = orderSnap.data().mounting
-    var epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn.toFixed(6);
-    var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn.toFixed(6);
-    var matPricePerSqIn = pricesSnap.data().matPricePerSqIn.toFixed(6);
-    var inkPricePerSqIn = pricesSnap.data().inkPricePerSqIn.toFixed(6);
-   var priceEach = 0;
-    if (mounting=="Foam Board"){
-        priceEach = width*height*foamPricePerSqIn;
-        priceEach += width*height*inkPricePerSqIn;
-        priceEach += width*height*epsonPricePerSqIn;
-    }
-    else if(mounting == "Mat Board"){
-        priceEach = width*height*matPricePerSqIn;
-        priceEach += width*height*inkPricePerSqIn;
-        priceEach += width*height*epsonPricePerSqIn;
-    }
-    var totalPrice = priceEach * quantity;
-}
-
-
-
-
 
 export const createInvoice = async function(){
     var title = document.getElementById("title").value;
@@ -169,7 +133,6 @@ export const createInvoice = async function(){
     document.getElementById("bill").value = "";
     document.getElementById("requestFrom").value = "";
     document.getElementById("description").value = "";
-    // console.log(docRef.title);
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data().title);
     sessionStorage.setItem("orderID", docSnap.id);
@@ -178,40 +141,105 @@ export const createInvoice = async function(){
 
 }
 
+export const calculatePrice = async function(){
+    const orderID = sessionStorage.getItem("orderID");
+    console.log(orderID);
+    // const issuedTo = document.getElementById("issued-to");
+    // issuedTo.innerHTML = "";
+    const orderRef = doc(db,  "invoices", orderID);
+    const orderSnap = await getDoc(orderRef);
+
+    const pricesRef = doc(db, "prices", "prices");
+    const pricesSnap = await getDoc(pricesRef);
+
+    var quantity = orderSnap.data().quantity;
+    var width = orderSnap.data().width;
+    var height = orderSnap.data().height;
+    var mounting = orderSnap.data().mounting
+    var epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn.toFixed(6);
+    var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn.toFixed(6);
+    var matPricePerSqIn = pricesSnap.data().matPricePerSqIn.toFixed(6);
+    var inkPricePerSqIn = pricesSnap.data().inkPricePerSqIn.toFixed(6);
+   var priceEach = 0;
+    if (mounting=="Foam Board"){
+        priceEach = width*height*foamPricePerSqIn;
+        priceEach += width*height*inkPricePerSqIn;
+        priceEach += width*height*epsonPricePerSqIn;
+    }
+    else if(mounting == "Mat Board"){
+        priceEach = width*height*matPricePerSqIn;
+        priceEach += width*height*inkPricePerSqIn;
+        priceEach += width*height*epsonPricePerSqIn;
+    }
+    else{
+        priceEach += width*height*inkPricePerSqIn;
+        priceEach += width*height*epsonPricePerSqIn;
+    }
+    var totalPrice = priceEach * quantity;
+
+     const amount = document.getElementById("amount");
+    amount.innerHTML = "$" + priceEach.toFixed(2);
+
+    let USDollar = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+});
+
+
+    const total = document.getElementById("total");
+    total.innerHTML = `${USDollar.format(totalPrice)}`;
+
+
+
+
+}
+
+
+
 export const showOrders = async function(){
+
+    const makeRow = (label, value) => {
+        const p = document.createElement("p");
+        p.innerHTML = `${label} ${value}`;
+        return p;
+};
   const orders = document.getElementById("orders");
 
   orders.innerHTML = ""; 
   
   const ordersQuery = query(collection(db, "invoices"));
   const ordersSnapshot = await getDocs(ordersQuery);
+  
   ordersSnapshot.forEach((item) => {
-    // const addToDashboard = document.getElementById("submit-order")
-    // addToDashboard.onclick = async function(){
-    //   await updateDoc(doc(db, "rectangle", item.id), {
-    //     isCompleted: true
-    //   });
-    //   showItems();
-    // }
+
     const orderTile = document.createElement("div");
     orderTile.className = "orderTile";
 
-    const orderNameLabel = document.createElement("p");
-    orderNameLabel.innerHTML = "Order Name:";
-    const orderName = document.createElement("p");
-    orderName.innerHTML = item.data().title;
+    const seeInvoiceButton = document.createElement("button");
+    seeInvoiceButton.innerHTML = "See Invoice";
+    seeInvoiceButton.className = "button";
+    seeInvoiceButton.onclick = async function(){
+        sessionStorage.setItem("orderID", item.id);
+        location.href = 'output.html';
+    }
 
-    // const width = document.createElement("p");
-    // width.innerHTML = item.data().width;
+    const markCompleteButton = document.createElement("button");
+    markCompleteButton.innerHTML = "Mark Complete";
+    markCompleteButton.className = "button";
+    markCompleteButton.onclick = async function(){
+      await deleteDoc(doc(db, "invoices", item.id));
+      showOrders();
+    }
     
-    // const widthLabel = document.createElement("p")
-    // widthLabel.innerHTML = "Width:"
-
-    orderTile.appendChild(orderNameLabel);
-    orderTile.appendChild(orderName);
-    // orderTile.appendChild(widthLabel);
-    // orderTile.appendChild(width);
-
+    orderTile.appendChild(makeRow("Order Name:", item.data().title));
+    orderTile.appendChild(makeRow("Width (in):", item.data().width));
+    orderTile.appendChild(makeRow("Height (in):", item.data().height));
+    orderTile.appendChild(makeRow("Mounting:", item.data().mounting));
+    orderTile.appendChild(makeRow("Quantity:", item.data().quantity));
+    orderTile.appendChild(makeRow("Notes:", item.data().description))
+    orderTile.appendChild(seeInvoiceButton);
+    orderTile.appendChild(markCompleteButton);
+    
     orders.appendChild(orderTile);
     }); //closes loop for incomplete items
 }
@@ -219,43 +247,27 @@ export const showOrders = async function(){
 export const createPDF = async function(){
     const orderID = sessionStorage.getItem("orderID");
     console.log(orderID);
-    // const issuedTo = document.getElementById("issued-to");
 
-    // issuedTo.innerHTML = "";
     const docRef = doc(db,  "invoices", orderID);
     const docSnap = await getDoc(docRef);
-   
 
     const issuedNameOutput = document.createElement("div");
     issuedNameOutput.className = "issuedNameOutput";
     const issuedName = document.getElementById("issued-to");
     issuedName.innerHTML = docSnap.data().bill;
-
-    // issuedNameOutput.appendChild(issuedName);
-    // issuedTo.appendChild(issuedNameOutput);
-
+    
     const date = document.getElementById("date");
-    // const dateOutput = document.createElement("div");
-    // dateOutput.className = "dateOutput";
-    // const dateP = document.createElement("p");
     date.innerHTML = docSnap.data().date;
 
-    // dateOutput.appendChild(dateP);
-    // date.appendChild(dateOutput);
-
     const requested = document.getElementById("requested-by");
-    // const requestedOutput = document.createElement("div");
-    // requestedOutput.className = "requestedOutput";
-    // const requestedP = document.createElement("p");
     requested.innerHTML = docSnap.data().requestFrom;
-
-    // requestedOutput.appendChild(requestedP);
-    // requested.appendChild(requestedOutput);
 
     const title = document.getElementById("title");
     title.innerHTML = docSnap.data().title;
 
+    const qty = document.getElementById("quantity");
+    qty.innerHTML = docSnap.data().quantity;
+
+
 
 }
-
-
