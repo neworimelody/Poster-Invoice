@@ -18,7 +18,7 @@ body{
 ul {
     list-style-type: none;
     margin: 0;
-    padding: 10px;
+    padding: 15px;
     overflow: hidden;
     background-color: #ffffff;
     border-radius: 40px;
@@ -145,4 +145,3 @@ ul {
     border-radius: 6px;
     width: fit-content;
 }
-
