@@ -5,24 +5,29 @@ body{
 
 }
 
-.orderTile{
-    display: flex;
-    margin: 10px auto; /* centers horizontally */
-    align-items:flex-start;
-    padding: 45px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #ffffff;
-    color: #000000;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    justify-content: space-around;
-    display: inline-block;
-    width: 8%; /* Adjust width as needed */
-    height: 30%
+#orders {
+  display: flex;
+  flex-wrap: wrap; 
+  flex-direction: row;
+  gap: 20px; 
 }
-.orderTile:hover{
-    box-shadow: 2px 2px 0px 2px #c36464;
+
+.orderTile{
+  margin-top: 2%;
+  display: flex;
+  flex-direction: column; 
+  align-items: flex-start;
+  padding: 20px;
+  font-size: 16px;
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  width: 300px; 
+  min-height: 70vh;
+  box-shadow: 2px 2px 3px #c3646436;
+  font-weight: 200;
 }
 
 .introduction
@@ -38,7 +43,7 @@ body{
 ul {
     list-style-type: none;
     margin: 0;
-    padding: 10px;
+    padding: 15px;
     overflow: hidden;
     background-color: #ffffff;
     border-radius: 40px;
@@ -65,4 +70,24 @@ ul {
     border-radius: 4px;
     background-color: #c36464;
     color:#ffffff
+  }
+
+  button{
+    display: block;
+    margin: 10px auto; /* centers horizontally */
+    padding: 12px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #B01111;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: all 0.5s ease;
+  }
+
+  button:hover{
+    transform: scale(1.1) perspective(0.5px);
+    background-color: #c36464
+    
+    
   }
