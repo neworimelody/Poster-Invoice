@@ -17,19 +17,22 @@ body{
     font-size: 120%;
 }
 hr.solid{
-    border-top: 3px solid  rgb(245, 245, 245);
+    border: none; 
+    border-top: 2px solid #f5f5f5; 
+    margin: 20px 0; 
+    background-color: transparent; 
 }
 
 .label{
+    width: 20%;
     font-weight: 600;
     font-family: "Open Sans", sans-serif;
 }
 
 
 .title-output{
-    width: 100px;
-    height: 300px;
-    padding: 10px;
+    max-width: 10%;
+    min-height: 200px;
     margin: 0;
 }
 .quantity-output{
@@ -49,12 +52,33 @@ hr.solid{
     justify-content: space-between;
 }
 .row2{
-     display: flex;
-    width: 63%;
+    display: flex;
+    width: 74%;
     justify-content: space-between;
 }
 .row3{
     display: flex;
-    width: 80%;
+    width: 100%;
     justify-content: space-between;
+}
+#title{
+    font-size: 90%;
+}
+#quantity{
+    font-size: 90%;
+}
+#amount{
+    font-size: 90%;
+}
+#issued-to{
+    font-size: 90%;
+}
+#date{
+    font-size: 90%;
+}
+#requested-by{
+    font-size: 90%;
+}
+#bill-to{
+    font-size: 90%;
 }
