@@ -12,9 +12,11 @@
     
     <script type="module" src="script.js"></script>
         <script type="module">
-        import {createPDF} from './script.js';
+        import {createPDF, calculatePrice} from './script.js';
         window.createPDF = createPDF;
+        window.calculatePrice = calculatePrice;
         createPDF();
+        calculatePrice();
     </script>
 
 <body>
@@ -49,8 +51,8 @@
             </div>
 
             <div>
-                <label class="label">Bill To:</label>
-                <p id = "requested-by">00000000000</p>
+                <label class="label">Pay To:</label>
+                <p id = "bill-to">Visual Arts Department</p>
             </div>
         </div>
 
@@ -59,28 +61,28 @@
         <br>
         <br>
         <div class = row3>
-            <div>
+            <div style = "width: 40%;">
                 <label class="label">
-                    Title
-                </label>
-                <hr class = solid>
+                    Title 
+                    <hr class = solid>
+                </label>   
                 <p id = "title"></p>
             </div>
 
             <div>
                 <label class = "label">
                     QTY
+                    <hr class = solid>
                 </label>
-                <hr class = solid>
-                <p id = "quantity">10000</p>
+                <p id = "quantity"></p>
             </div>
 
             <div>
                 <label class = "label">
                     Amount (per item)
+                    <hr class = solid>
                 </label>
-                <hr class = solid>
-                <p id = "amount">0.003</p>
+                <p id = "amount"></p>
             </div>
         </div>
        
