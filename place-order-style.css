@@ -5,6 +5,38 @@ h1{
     font-family: "Open Sans", sans-serif;
     font-size: 200%;
 }
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 15px;
+    overflow: hidden;
+    background-color: #ffffff;
+    border-radius: 40px;
+  }
+  
+  ul li {
+    float: left;
+  }
+  
+  ul li a {
+    display: block;
+    color: rgb(255, 255, 255);
+    margin-left: 260px;
+    text-align: center;
+    align-items: center;
+    justify-content: space-around;
+    padding: 14px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+  }
+  ul li a.active{
+    border-radius: 4px;
+    background-color: #c36464;
+    color:#ffffff
+  }
+  
 
 .rectangle{
 
