@@ -227,8 +227,12 @@ export const showOrders = async function(){
     markCompleteButton.innerHTML = "Mark Complete";
     markCompleteButton.className = "button";
     markCompleteButton.onclick = async function(){
-      await deleteDoc(doc(db, "invoices", item.id));
-      showOrders();
+        if (confirm("You are marking this item as complete. Press OK to proceed.")) {
+            await deleteDoc(doc(db, "invoices", item.id));
+            showOrders();
+        } else {
+
+        }
     }
     
     orderTile.appendChild(makeRow("Order Name:", item.data().title));
