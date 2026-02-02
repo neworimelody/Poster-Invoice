@@ -47,6 +47,12 @@ ul {
     background-color: #c36464;
     color:#ffffff
   }
+
+  ul li a.active{
+    border-radius: 4px;
+    background-color: #c36464;
+    color:#ffffff
+  }
  
  
  /* Admin */
