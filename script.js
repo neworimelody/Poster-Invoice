@@ -185,76 +185,215 @@ export const calculatePrice = async function(){
     currency: 'USD',
 });
 
-
     const total = document.getElementById("total");
     total.innerHTML = `${USDollar.format(totalPrice)}`;
-
-
-
 
 }
 
 
+export const showOrders = async function () {
 
-export const showOrders = async function(){
+  const orderID = sessionStorage.getItem("orderID");
+    console.log(orderID);
 
-    const makeRow = (label, value) => {
-        const p = document.createElement("p");
-        p.innerHTML = `${label} ${value}`;
-        return p;
-};
+  const makeRow = (label, value) => {
+    const p = document.createElement("p");
+    p.innerHTML = `${label} ${value ?? ""}`;
+    return p;
+  };
+
   const orders = document.getElementById("orders");
+  orders.innerHTML = "";
 
-  orders.innerHTML = ""; 
-  
+  //gets invoices from firebase
   const ordersQuery = query(collection(db, "invoices"));
   const ordersSnapshot = await getDocs(ordersQuery);
-  
-  ordersSnapshot.forEach((item) => {
 
+  //groups orders if they're duplicates
+  const orderGroups = [];
+
+  ordersSnapshot.forEach((item) => {
+    const data = item.data();
+
+    const key = `${data.requestFrom}_${data.date}`;
+
+    //creates new array for that key if not a duplicate
+    if (!orderGroups[key]) {
+      orderGroups[key] = [];
+    }
+
+    orderGroups[key].push({
+      id: item.id,
+      title: data.title,
+      mounting: data.mounting,
+      width: data.width,
+      height: data.height, 
+      quantity: data.quantity,
+      description: data.description
+    });
+  });
+
+
+  Object.values(orderGroups).forEach(group => {
+    if (group.length == 1) {
+      orders.appendChild(createOrderTile(group[0]));
+    } else {
+      orders.appendChild(createOrderCarousel(group));
+    }
+  });
+
+  function createOrderTile(order) {
     const orderTile = document.createElement("div");
     orderTile.className = "orderTile";
+
+    orderTile.appendChild(makeRow("Order Name:", order.title));
+    orderTile.appendChild(makeRow("Width (in):", order.width));
+    orderTile.appendChild(makeRow("Height (in):", order.height));
+    orderTile.appendChild(makeRow("Mounting:", order.mounting));
+    orderTile.appendChild(makeRow("Quantity:", order.quantity));
+    orderTile.appendChild(makeRow("Notes:", order.description));
 
     const seeInvoiceButton = document.createElement("button");
     seeInvoiceButton.innerHTML = "See Invoice";
     seeInvoiceButton.className = "button";
-    seeInvoiceButton.onclick = async function(){
-        sessionStorage.setItem("orderID", item.id);
-        location.href = 'output.html';
-    }
+    seeInvoiceButton.onclick = () => {
+      sessionStorage.setItem("orderID", order.id);
+      location.href = "output.html";
+    };
 
     const markCompleteButton = document.createElement("button");
     markCompleteButton.innerHTML = "Mark Complete";
     markCompleteButton.className = "button";
-    markCompleteButton.onclick = async function(){
-        if (confirm("You are marking this item as complete. Press OK to proceed.")) {
-            await deleteDoc(doc(db, "invoices", item.id));
-            showOrders();
-        } else {
+    markCompleteButton.onclick = async () => {
+      if (confirm("You are marking this item as complete. Press OK to proceed.")) {
+        await deleteDoc(doc(db, "invoices", order.id));
+        showOrders();
+      }
+    };
 
-        }
-    }
-    
-    orderTile.appendChild(makeRow("Order Name:", item.data().title));
-    orderTile.appendChild(makeRow("Width (in):", item.data().width));
-    orderTile.appendChild(makeRow("Height (in):", item.data().height));
-    orderTile.appendChild(makeRow("Mounting:", item.data().mounting));
-    orderTile.appendChild(makeRow("Quantity:", item.data().quantity));
-    orderTile.appendChild(makeRow("Notes:", item.data().description))
     orderTile.appendChild(seeInvoiceButton);
     orderTile.appendChild(markCompleteButton);
+
+    return orderTile;
+  }
+
+  function createOrderCarousel(group) {
+
+    //buttons and viewport
+    const carousel = document.createElement("div");
+    carousel.className = "orderCarousel";
+
+    //giant slide with all the "duplicate" orders
+    const track = document.createElement("div");
+    track.className = "carouselTrack";
     
-    orders.appendChild(orderTile);
-    }); //closes loop for incomplete items
+
+    group.forEach(order => {
+        //one slide per position
+        const slide = document.createElement("div");
+        slide.className = "carouselSlide";
+        
+        const inner = document.createElement("div");
+        inner.className = "carouselSlideInner";
+        
+        inner.appendChild(createOrderTile(order));
+        slide.appendChild(inner);
+        track.appendChild(slide);
+    });
+
+    //current visible slide
+    let index = 0;
+
+    //next/prev buttons
+
+    const prev = document.createElement("button");
+    prev.innerHTML = "‹";
+    prev.className = "carouselBtn prev";
+    prev.onclick = () => {
+        //prevents from over sliding
+      index = Math.max(index - 1, 0);
+      update();
+    };
+
+    const next = document.createElement("button");
+    next.innerHTML = "›";
+    next.className = "carouselBtn next";
+    next.onclick = () => {
+        //prevents from over sliding
+      index = Math.min(index + 1, group.length - 1);
+      update();
+    };
+
+    //moves track horizontally
+    function update() {
+        const viewportWidth = viewport.offsetWidth;
+        track.style.transform = `translateX(-${index * viewportWidth}px)`;
+        
+        const activeSlide = track.children[index];
+        const inner = activeSlide.querySelector(".carouselSlideInner");
+        viewport.style.height = inner.offsetHeight + "px";
 }
 
+    //window shows one card at a time
+    const viewport = document.createElement("div");
+    viewport.className = "carouselViewport";
+    //puts the track into the viewport
+    viewport.appendChild(track);
+    
+    
+    carousel.appendChild(prev);
+    carousel.appendChild(viewport);
+    carousel.appendChild(next);
+
+    return carousel;
+  }
+};
+
+
 export const createPDF = async function(){
-    const orderID = sessionStorage.getItem("orderID");
-    console.log(orderID);
 
-    const docRef = doc(db,  "invoices", orderID);
-    const docSnap = await getDoc(docRef);
+const orderID = sessionStorage.getItem("orderID");
+  console.log(orderID);
+  
+  const docRef = doc(db,  "invoices", orderID);
+  const docSnap = await getDoc(docRef);
 
+ 
+
+
+  //gets invoices from firebase
+  const ordersQuery = query(collection(db, "invoices"), where("date", "==", docSnap.data().date), where("requestFrom", "==", docSnap.data().requestFrom));
+  const ordersSnapshot = await getDocs(ordersQuery);
+
+  //groups orders if they're duplicates
+  const orderGroups = {};
+
+  ordersSnapshot.forEach((item) => {
+    const data = item.data();
+    console.log(item.data().bill);
+    const key = `${data.requestFrom}_${data.date}`;
+
+    //creates new array for that key if not a duplicate
+    if (!orderGroups[key]) {
+      orderGroups[key] = [];
+    }
+
+    orderGroups[key].push({
+      id: item.id,
+      title: data.title,
+      mounting: data.mounting,
+      width: data.width,
+      height: data.height, 
+      quantity: data.quantity,
+      description: data.description,
+      requestFrom: data.requestFrom, 
+      issuedTo: data.bill,
+      date: data.date
+    });
+  });
+
+
+  if(orderGroups.length == 1){
     const issuedNameOutput = document.createElement("div");
     issuedNameOutput.className = "issuedNameOutput";
     const issuedName = document.getElementById("issued-to");
@@ -272,6 +411,18 @@ export const createPDF = async function(){
     const qty = document.getElementById("quantity");
     qty.innerHTML = docSnap.data().quantity;
 
+  }
+  else{ 
+    Object.values(orderGroups).forEach(group =>{
+      console.log(group);
+      group.forEach((order) =>{
+        document.getElementById("issued-to").innerHTML = order.issuedTo;
+        document.getElementById("date").innerHTML = order.date;
+        document.getElementById("requested-by").innerHTML = order.requestFrom;
+        document.getElementById("title").innerHTML += order.title + "<br>";
+        document.getElementById("quantity").innerHTML += order.quantity + "<br>";
 
-
+      });
+    });
+  } 
 }
