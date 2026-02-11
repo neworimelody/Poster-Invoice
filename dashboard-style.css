@@ -1,3 +1,4 @@
+
 body{
     background-color: #f5f5f5;
     font-family: "Open Sans", sans-serif;
@@ -92,12 +93,55 @@ ul {
 
   button:hover{
     transform: scale(1.1) perspective(0.5px);
-    background-color: #c36464
-    
-    
+    background-color: #c36464  
   }
  header{
   color: rgb(0, 0, 0);
   margin-top: 35px;
   font-size: 30px;
  }
+
+.orderCarousel {
+  width: 330px; 
+  position: relative;
+}
+
+.carouselViewport {
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+  will-change: transform;
+  transition: transform 0.3s ease;
+}
+
+.carouselSlide {
+  flex: 0 0 auto;
+}
+
+.carouselSlideInner {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+.carouselBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #b71c1c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 100%;
+  z-index: 10;
+}
+
+.carouselBtn.prev {
+  left: 0;
+}
+
+.carouselBtn.next {
+  right: 0;
+}
