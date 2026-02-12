@@ -8,31 +8,20 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Caprasimo&family=Gravitas+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playpen+Sans:wght@100..800&family=Rubik+Doodle+Shadow&family=Titan+One&family=Ysabeau+Infant:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Caprasimo&family=Gravitas+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playpen+Sans:wght@100..800&family=Rubik+Doodle+Shadow&family=Titan+One&family=Ysabeau+Infant:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-<link href="dashboard-style.css" rel="stylesheet" type="text/css" />
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Caprasimo&family=Gravitas+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playpen+Sans:wght@100..800&family=Rubik+Doodle+Shadow&family=Titan+One&family=Ysabeau+Infant:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 
     </head>
 
     <body>
         <script type="module" src="script.js"></script>
         <script type="module">
-        import {createInvoice} from './script.js';
+        import {createInvoice, addToOrder} from './script.js';
         window.createInvoice = createInvoice;
+        window.addToOrder = addToOrder;
         // window.showItems = showItems;
   </script>
 
-   <ul>
-        <li><a href="index.html">Dashboard</a></li>
-        <li><a class = "active" href="place-order.html">Create Invoice</a></li>
-        <li><a href="admin.html">Admin</a></li>
-      </ul>
 
-
-    <center>
+  
          <div class = "rectangle"> 
             <h1>
                 Submit Order 
@@ -43,12 +32,12 @@
                 <div class="half">
                 <label class = "inputs">Title<span class="highlight">*</span></label>
                 <br>
-                <input style = "height: 30px; width: 90%; font-size: 100%; font-family: 'Open Sans', sans-serif;"  type = "text" id = "title"> 
+                <input class="row1Style1"  type = "text" id = "title"> 
                 </div>
                 <div class="half">
                 <label class = "inputs">Date Invoiced<span class="highlight">*</span></label>
                 <br>
-                <input style = "height: 30px; width: 50%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = date id = "date">
+                <input class="row1Style2" type = date id = "date">
                 </div>
             </div>
             <br>
@@ -56,11 +45,11 @@
             <div class = "row">
                 <div class = "half2">
                     <div><label class = "inputs">Width<span class="highlight">*</span></label></div>
-                    <div><input style = "height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "width"> in</div>
+                    <div><input class="row2Style1" type = text id = "width"> in</div>
                 </div>
                 <div class = "half2">
                     <div><label class = "inputs">Height<span class="highlight">*</span></label></div>
-                    <div><input style = "height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "height"> in</div>
+                    <div><input class="row2Style2"  type = text id = "height"> in</div>
                 </div>
                 <div class = "half3">
                     <label class = "inputs">Mounting<span class="highlight">*</span></label>
@@ -76,15 +65,15 @@
             <div class = "row">
                 <div style = "width: 50%;" class = "half4">
                     <div><label class = "inputs">Quantity<span class="highlight">*</span></label></div>
-                    <div><input style = "height: 30px; width: 50%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "quantity"></div>
+                    <div><input class="row3Style1"  type = text id = "quantity"></div>
                 </div>
                 <div class = "half4">
                     <div><label class = "inputs">Bill To (Department)<span class="highlight">*</span></label></div>
-                    <div><input style = "height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "bill"></div>
+                    <div><input class="row3Style2"  type = text id = "bill"></div>
                 </div>
                 <div class = "half4">
                     <div><label class = "inputs">Requested By<span class="highlight">*</span></label></div>
-                    <div><input style = "height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;" type = text id = "requestFrom"></div>
+                    <div><input class="row3Style3"  type = text id = "requestFrom"></div>
                 </div>
             </div>
             <br>
@@ -98,11 +87,10 @@
             
             <div class = "row">
                 <button onclick= "createInvoice();" id = "submit-order"> Submit Order to Invoice</button>
-                <button id = "add-to-order"> Add to Order</button>
+                <button onclick="addToOrder()" id = "add-to-order"> Add to Order</button>
             </div>
         </div>
-           
-        </center>
+      
         </div>
     </body>
        
