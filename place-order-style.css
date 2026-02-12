@@ -1,41 +1,13 @@
 body{
     background-color: rgb(245, 245, 245);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 h1{
     font-family: "Open Sans", sans-serif;
     font-size: 200%;
 }
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 15px;
-    overflow: hidden;
-    background-color: #ffffff;
-    border-radius: 40px;
-  }
-  ul li {
-    float: left;
-  }
-  
-  ul li a {
-    display: block;
-    color: rgb(255, 255, 255);
-    margin-left: 260px;
-    text-align: center;
-    align-items: center;
-    justify-content: space-around;
-    padding: 14px 16px;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-
-  }
-  ul li a.active{
-    border-radius: 4px;
-    background-color: #c36464;
-    color:#ffffff
-  }
-  
 
 .rectangle{
 
@@ -156,4 +128,27 @@ button{
 }
 button:hover{
     background-color: #700000
+}
+
+.row1Style1{
+    height: 30px; width: 90%; font-size: 100%; font-family: 'Open Sans', sans-serif;
+}
+.row1Style2{
+    height: 30px;
+     width: 50%; font-size: 100%; font-family: 'Open Sans', sans-serif;
+}
+.row2Style1{
+    height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;
+}
+.row2Style2{
+    height: 30px; width: 45%; font-size: 100%; font-family: 'Open Sans', sans-serif;
+}
+.row3Style1{
+    height: 30px; width: 50%; font-size: 100%; font-family: 'Open Sans', sans-serif;
+}
+.row3Style2{
+    height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;
+}
+.row3Style3{
+    height: 30px; width: 80%; font-size: 100%; font-family: 'Open Sans', sans-serif;
 }
