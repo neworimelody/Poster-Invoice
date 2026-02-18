@@ -91,6 +91,10 @@ export const showPrices = async function(){
 
 
 export const createInvoice = async function(){
+    var inputs = document.getElementsByTagName("input");
+    var descriptions = document.getElementsByTagName("textarea");
+    console.log(inputs);
+    
     var title = document.getElementById("title").value;
     var date = document.getElementById("date").value;
     var width = document.getElementById("width").value;
@@ -122,26 +126,41 @@ export const createInvoice = async function(){
         description: description,
     });
 
-    document.getElementById("title").value = "";
-    document.getElementById("date").value = "";
-    document.getElementById("width").value = "";
-    document.getElementById("height").value = "";
-    document.getElementById("foamBoard").checked = false;
-    document.getElementById("matBoard").checked = false;
-    document.getElementById("none").checked = false;
-    document.getElementById("quantity").value = "";
-    document.getElementById("bill").value = "";
-    document.getElementById("requestFrom").value = "";
-    document.getElementById("description").value = "";
+    var counter = 1;
+    for(var i = 10; i < inputs.length; i+=8){
+        console.log(inputs[i].value);
+        if (inputs[i+3].checked){
+            mounting = "Foam Board"
+        }
+        else if(inputs[i+4].checked){
+            mounting = "Mat Board"
+        }
+        else{
+            mounting = "None"
+        }
+    
+        const docRef = await addDoc(collection(db, "invoices"),{
+            title: inputs[i].value,
+            date: date, 
+            width: Number(inputs[i+1].value,), 
+            height: Number(inputs[i+2].value,), 
+            mounting: mounting,
+            quantity: Number(inputs[i+6].value,), 
+            bill: bill, 
+            requestFrom: requestFrom, 
+            description: descriptions[counter].value,
+        });
+        counter++;
+
+    }
     const docSnap = await getDoc(docRef);
-    console.log(docSnap.data().title);
     sessionStorage.setItem("orderID", docSnap.id);
     
     location.href = 'output.html';
 
 }
 
-export const calculatePrice = async function(){
+export const calculatePrice = async function(record){
     const orderID = sessionStorage.getItem("orderID");
     console.log(orderID);
     // const issuedTo = document.getElementById("issued-to");
@@ -160,7 +179,7 @@ export const calculatePrice = async function(){
     var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn.toFixed(6);
     var matPricePerSqIn = pricesSnap.data().matPricePerSqIn.toFixed(6);
     var inkPricePerSqIn = pricesSnap.data().inkPricePerSqIn.toFixed(6);
-   var priceEach = 0;
+    var priceEach = 0;
     if (mounting=="Foam Board"){
         priceEach = width*height*foamPricePerSqIn;
         priceEach += width*height*inkPricePerSqIn;
@@ -177,7 +196,7 @@ export const calculatePrice = async function(){
     }
     var totalPrice = priceEach * quantity;
 
-     const amount = document.getElementById("amount");
+    const amount = document.getElementById("amount");
     amount.innerHTML = "$" + priceEach.toFixed(2);
 
     let USDollar = new Intl.NumberFormat('en-US', {
@@ -190,11 +209,21 @@ export const calculatePrice = async function(){
     total.innerHTML = `${USDollar.format(totalPrice)}`;
 
 
-
-
 }
 
-
+// export const calculateTotalPrice = async function (orderName, orderDate) {
+//     //gets invoices from firebase
+//     const ordersQuery = query(collection(db, "invoices"));
+//     const ordersSnapshot = await getDocs(ordersQuery);
+//     var total = 0;
+//     ordersSnapshot.forEach((item) => {
+//     const data = item.data();
+//     for (orderName, orderDate in item.data())
+//         if(orderName==item.data() && orderDate==item.data()){
+//             total += 1;
+//         }
+//     });
+// }
 
 export const showOrders = async function () {
 
@@ -434,7 +463,13 @@ export const showOrders = async function () {
 
 
 export const addToOrder = async function () {
+    
+    
+    // Make sure the mounting works
+    var uid = Date.now(); 
+    var mountingGroupName = "mounting_" + uid;
 
+    // Make sure the buttons is hidden
     var addButtons = document.querySelectorAll("#add-to-order");
     var lastAddButton = addButtons[addButtons.length - 1];
     var buttonRow = lastAddButton.parentElement;
@@ -461,6 +496,7 @@ export const addToOrder = async function () {
     Half1.appendChild(document.createElement("br"));
   
     var Row1Style1 = document.createElement("input");
+     
     Row1Style1.setAttribute("class", "row1Style1");
     Row1Style1.type = "text";
     Half1.appendChild(Row1Style1);
@@ -469,16 +505,16 @@ export const addToOrder = async function () {
     Half2.setAttribute("class", "half");
     firstRow.appendChild(Half2);
   
-    var input2 = document.createElement("label");
-    input2.setAttribute("class", "inputs");
-    input2.innerHTML = 'Date Invoiced<span class="highlight">*</span>';
-    Half2.appendChild(input2);
-    Half2.appendChild(document.createElement("br"));
+    // var input2 = document.createElement("label");
+    // input2.setAttribute("class", "inputs");
+    // input2.innerHTML = 'Date Invoiced<span class="highlight">*</span>';
+    // Half2.appendChild(input2);
+    // Half2.appendChild(document.createElement("br"));
   
-    var Row1Style2 = document.createElement("input");
-    Row1Style2.setAttribute("class", "row1Style2");
-    Row1Style2.type = "date";
-    Half2.appendChild(Row1Style2);
+    // var Row1Style2 = document.createElement("input");
+    // Row1Style2.setAttribute("class", "row1Style2");
+    // Row1Style2.type = "date";
+    // Half2.appendChild(Row1Style2);
   
     tile.appendChild(firstRow);
     tile.appendChild(document.createElement("br"));
@@ -487,7 +523,7 @@ export const addToOrder = async function () {
     var secondRow = document.createElement("div");
     secondRow.setAttribute("class", "row");
     tile.appendChild(secondRow);
-  
+ 
   
     var hAlf2 = document.createElement("div");
     hAlf2.setAttribute("class", "half2");
@@ -545,11 +581,11 @@ export const addToOrder = async function () {
     // foam
     var foamInput = document.createElement("input");
     foamInput.type = "radio";
-    foamInput.name = "mounting";
-    foamInput.id = "foamBoard";
+    foamInput.name = mountingGroupName;
+    foamInput.id = "foamBoard_" + uid;
 
     var foamLabel = document.createElement("label");
-    foamLabel.setAttribute("for", "foamBoard");
+    foamLabel.setAttribute("for", "foamBoard_" + uid);
     foamLabel.textContent = "Foam Board";
 
     Checkbox.appendChild(foamInput);
@@ -558,11 +594,12 @@ export const addToOrder = async function () {
     // mat
     var matInput = document.createElement("input");
     matInput.type = "radio";
-    matInput.name = "mounting";
-    matInput.id = "matBoard";
+    matInput.name = mountingGroupName;
+    matInput.id = "matBoard_" + uid;
+    
 
     var matLabel = document.createElement("label");
-    matLabel.setAttribute("for", "matBoard");
+    matLabel.setAttribute("for", "matBoard_" + uid);
     matLabel.textContent = "Mat Board";
 
     Checkbox.appendChild(matInput);
@@ -571,11 +608,11 @@ export const addToOrder = async function () {
     // none
     var noneInput = document.createElement("input");
     noneInput.type = "radio";
-    noneInput.name = "mounting";
-    noneInput.id = "none";
+    noneInput.name = mountingGroupName;
+    noneInput.id = "none_" + uid;
 
     var noneLabel = document.createElement("label");
-    noneLabel.setAttribute("for", "none");
+    noneLabel.setAttribute("for", "none_" + uid);
     noneLabel.textContent = "None";
 
     Checkbox.appendChild(noneInput);
@@ -695,4 +732,3 @@ export const addToOrder = async function () {
 
     document.body.appendChild(tile);
   };
-  
