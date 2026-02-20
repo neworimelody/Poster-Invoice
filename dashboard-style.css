@@ -1,8 +1,7 @@
-
-body{
+/* overall styling */
+body{ 
     background-color: #f5f5f5;
     font-family: "Open Sans", sans-serif;
-
 }
 
 #orders {
@@ -12,8 +11,9 @@ body{
   gap: 20px; 
 }
 
+/* styling for each order tile */
 .orderTile{
-  margin-top: 2%;
+  margin-top: 0;
   display: flex;
   flex-direction: column; 
   align-items: flex-start;
@@ -30,6 +30,7 @@ body{
   font-weight: 200;
 }
 
+/* styling for text that shows up when no orders are present */
 .introduction
 {
     display: flex;
@@ -40,6 +41,8 @@ body{
     padding: 0 20px;
     box-sizing: border-box;
 }
+
+/* dashboard navigator background/overall styling*/
 ul {
     list-style-type: none;
     margin: 0;
@@ -53,6 +56,7 @@ ul {
     float: left;
   }
   
+  /* dashboard navigator text styling */
   ul li a {
     display: block;
     color: rgb(8, 0, 0);
@@ -65,19 +69,21 @@ ul {
     transition: all 0.3s ease;
 
   }
-  
+  /* dashboard text/button hover effect */
   ul li a:hover {
     border-radius: 4px;
     background-color: #c36464;
     color:#ffffff
   }
 
+  /* dashboard text/button clicked effect */
   ul li a.active{
     border-radius: 4px;
     background-color: #c36464;
     color:#ffffff
   }
 
+  /* order tile button styling (see invoice & mark complete) */
   button{
     display: block;
     margin: 10px auto; /* centers horizontally */
@@ -91,40 +97,49 @@ ul {
     transition: all 0.5s ease;
   }
 
+  /* order tile button hover styling (see invoice & mark complete) */
   button:hover{
     transform: scale(1.1) perspective(0.5px);
     background-color: #c36464  
   }
+
+  /* "ACTIVE INVOICES" styling */
  header{
   color: rgb(0, 0, 0);
   margin-top: 35px;
   font-size: 30px;
  }
-
+/* main wrapper for carousel */
 .orderCarousel {
-  width: 330px; 
   position: relative;
+  width: 340px; /* Adjust to fit your 300px tile + padding */
+  margin: 0 auto;
 }
-
+/* visible window of carousel */
 .carouselViewport {
   overflow: hidden;
+  width: 100%; /* Ensure it fills the carousel container */
 }
 
+/* sliding track that holds all orders */
 .carouselTrack {
   display: flex;
   will-change: transform;
   transition: transform 0.3s ease;
 }
-
+/* individual slide container */
 .carouselSlide {
-  flex: 0 0 auto;
+  flex: 0 0 100%; /* Fixes the width to 100% of the viewport */
 }
 
+/*inner wrapper for slide */
 .carouselSlideInner {
   padding: 16px;
   display: flex;
   justify-content: center;
 }
+
+/* prev/next button styling */
 .carouselBtn {
   position: absolute;
   top: 50%;
@@ -136,12 +151,16 @@ ul {
   cursor: pointer;
   border-radius: 100%;
   z-index: 10;
+  margin: 0; 
 }
 
+/* pushes previous button to left */
 .carouselBtn.prev {
   left: 0;
 }
 
+/* pushes next button to right */
 .carouselBtn.next {
   right: 0;
 }
+
