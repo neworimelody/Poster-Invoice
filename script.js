@@ -25,7 +25,7 @@ export const addPrice = async function(){
 
     var foamWidth = document.getElementById("foam-width").value;
     var foamLength = document.getElementById("foam-length").value;
-    var foamSheets = document.getElecmentById("foam-qty(sheets)").value;
+    var foamSheets = document.getElementById("foam-qty(sheets)").value;
     var foamPrice = document.getElementById("foam-price").value;
     var foamArea = foamWidth*foamLength;
     var foamPricePerSqIn = foamPrice/(foamArea*foamSheets);
@@ -71,6 +71,8 @@ export const addPrice = async function(){
   showPrices();
  
 }
+
+
 export const showPrices = async function(){
     const docRef = doc(db, "prices", "prices");
     const docSnap = await getDoc(docRef);
@@ -87,7 +89,7 @@ export const showPrices = async function(){
 
 }
 
-//Creates firebase documents for each order when you submit a new order
+
 export const createInvoice = async function(){
     var inputs = document.getElementsByTagName("input");
     var descriptions = document.getElementsByTagName("textarea");
@@ -155,129 +157,104 @@ export const createInvoice = async function(){
     sessionStorage.setItem("orderID", docSnap.id);
     
     location.href = 'output.html';
-}
-
-export const calculatePrice = async function(record){
-    const orderID = sessionStorage.getItem("orderID");
-    console.log(orderID);
-    // const issuedTo = document.getElementById("issued-to");
-    // issuedTo.innerHTML = "";
-    const orderRef = doc(db,  "invoices", orderID);
-    const orderSnap = await getDoc(orderRef);
-
-    const pricesRef = doc(db, "prices", "prices");
-    const pricesSnap = await getDoc(pricesRef);
-
-    var quantity = orderSnap.data().quantity;
-    var width = orderSnap.data().width;
-    var height = orderSnap.data().height;
-    var mounting = orderSnap.data().mounting
-    var epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn.toFixed(6);
-    var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn.toFixed(6);
-    var matPricePerSqIn = pricesSnap.data().matPricePerSqIn.toFixed(6);
-    var inkPricePerSqIn = pricesSnap.data().inkPricePerSqIn.toFixed(6);
-    var priceEach = 0;
-    if (mounting=="Foam Board"){
-        priceEach = width*height*foamPricePerSqIn;
-        priceEach += width*height*inkPricePerSqIn;
-        priceEach += width*height*epsonPricePerSqIn;
-    }
-    else if(mounting == "Mat Board"){
-        priceEach = width*height*matPricePerSqIn;
-        priceEach += width*height*inkPricePerSqIn;
-        priceEach += width*height*epsonPricePerSqIn;
-    }
-    else{
-        priceEach += width*height*inkPricePerSqIn;
-        priceEach += width*height*epsonPricePerSqIn;
-    }
-    var totalPrice = priceEach * quantity;
-
-    const amount = document.getElementById("amount");
-    amount.innerHTML = "$" + priceEach.toFixed(2);
-
-    let USDollar = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-});
-    const total = document.getElementById("total");
-    total.innerHTML = `${USDollar.format(totalPrice)}`;
 
 }
 
-// export const calculateTotalPrice = async function (orderName, orderDate) {
-//     //gets invoices from firebase
-//     const ordersQuery = query(collection(db, "invoices"));
-//     const ordersSnapshot = await getDocs(ordersQuery);
-//     var total = 0;
-//     ordersSnapshot.forEach((item) => {
-//     const data = item.data();
-//     for (orderName, orderDate in item.data())
-//         if(orderName==item.data() && orderDate==item.data()){
-//             total += 1;
-//         }
-//     });
-// }
+export const calculatePrice = async function() {
+  const orderID = sessionStorage.getItem("orderID");
+  const orderRef = doc(db, "invoices", orderID);
+  const orderSnap = await getDoc(orderRef);
 
-//Displays orders on dashboard that groups orders together or seperate based on
-// whether or not they're a "duplicate"
+  const pricesRef = doc(db, "prices", "prices");
+  const pricesSnap = await getDoc(pricesRef);
+
+  // get all the orders with the same date + requestFrom
+  const ordersQuery = query(
+      collection(db, "invoices"),
+      where("date", "==", orderSnap.data().date),
+      where("requestFrom", "==", orderSnap.data().requestFrom)
+  );
+  const ordersSnapshot = await getDocs(ordersQuery);
+
+  var epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn;
+  var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn;
+  var matPricePerSqIn = pricesSnap.data().matPricePerSqIn;
+  var inkPricePerSqIn = pricesSnap.data().inkPricePerSqIn;
+
+  var grandTotal = 0;
+
+  // Loop through every order in the group
+  ordersSnapshot.forEach((item) => {
+      const data = item.data();
+      var priceEach = 0;
+
+      if (data.mounting == "Foam Board") {
+          priceEach = data.width * data.height * (foamPricePerSqIn + inkPricePerSqIn + epsonPricePerSqIn);
+      } else if (data.mounting == "Mat Board") {
+          priceEach = data.width * data.height * (matPricePerSqIn + inkPricePerSqIn + epsonPricePerSqIn);
+      } else {
+          priceEach = data.width * data.height * (inkPricePerSqIn + epsonPricePerSqIn);
+      }
+
+      grandTotal += priceEach * data.quantity;
+  });
+
+  let USDollar = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+  document.getElementById("total").innerHTML = USDollar.format(grandTotal);
+}
 export const showOrders = async function () {
 
-    const orderID = sessionStorage.getItem("orderID");
-      console.log(orderID);
-  
-    const makeRow = (label, value) => {
-      const p = document.createElement("p");
-      p.innerHTML = `${label} ${value ?? ""}`;
-      return p;
-    };
-  
-    const orders = document.getElementById("orders");
-    orders.innerHTML = "";
-  
-    //gets invoices from firebase
-    const ordersQuery = query(collection(db, "invoices"));
-    const ordersSnapshot = await getDocs(ordersQuery);
-  
-    //groups orders if they're duplicates
-    const orderGroups = {};
-  
-    ordersSnapshot.forEach((item) => {
-      const data = item.data();
-  
-      const key = `${data.requestFrom}_${data.date}`;
-  
-      //creates new array for that key if not a duplicate
-      if (!orderGroups[key]) {
-        orderGroups[key] = [];
-      }
-  
-      orderGroups[key].push({
-        id: item.id,
-        title: data.title,
-        mounting: data.mounting,
-        width: data.width,
-        height: data.height, 
-        quantity: data.quantity,
-        description: data.description,
-        requestFrom: data.requestFrom, 
-        issuedTo: data.bill,
-        date: data.date
-      });
-    });
+  const orderID = sessionStorage.getItem("orderID");
+    console.log(orderID);
 
-    Object.values(orderGroups).forEach(group => {
-      if (group.length == 1) {
-        orders.appendChild(createOrderTile(group[0]));
-      } else {
-        orders.appendChild(createOrderCarousel(group));
-      }
-    });
+  const makeRow = (label, value) => {
+    const p = document.createElement("p");
+    p.innerHTML = `${label} ${value ?? ""}`;
+    return p;
+  };
 
-    //Compiles title, width, height, mounting, material, quantity, and any notes
-    //into one rectangle with buttons that can delete the order from the database
-    //and a button that, when pressed, will take the user to the invoice output
-    //with additional information
+  const orders = document.getElementById("orders");
+  orders.innerHTML = "";
+
+  //gets invoices from firebase
+  const ordersQuery = query(collection(db, "invoices"));
+  const ordersSnapshot = await getDocs(ordersQuery);
+
+  //groups orders if they're duplicates
+  const orderGroups = {};
+
+  ordersSnapshot.forEach((item) => {
+    const data = item.data();
+
+    const key = `${data.requestFrom}_${data.date}`;
+
+    //creates new array for that key if not a duplicate
+    if (!orderGroups[key]) {
+      orderGroups[key] = [];
+    }
+
+    orderGroups[key].push({
+      id: item.id,
+      title: data.title,
+      mounting: data.mounting,
+      width: data.width,
+      height: data.height, 
+      quantity: data.quantity,
+      description: data.description,
+      requestFrom: data.requestFrom, 
+      issuedTo: data.bill,
+      date: data.date
+    });
+  });
+
+  Object.values(orderGroups).forEach(group => {
+    if (group.length == 1) {
+      orders.appendChild(createOrderTile(group[0]));
+    } else {
+      orders.appendChild(createOrderCarousel(group));
+    }
+  });
+  
     function createOrderTile(order) {
       const orderTile = document.createElement("div");
       orderTile.className = "orderTile";
@@ -300,30 +277,11 @@ export const showOrders = async function () {
       const markCompleteButton = document.createElement("button");
       markCompleteButton.innerHTML = "Mark Complete";
       markCompleteButton.className = "button";
-      console.log("orderGroups");
-      console.log(orderGroups);
       markCompleteButton.onclick = async () => {
-          
-      // Object.values(orderGroups).forEach( async group => {
-      //   console.log("group");
-      //   console.log(group);
-      //   if(group.length == 1){
-      //     console.log("FOUND LIST OF 1");
-          if (confirm("You are marking this/these item(s) as complete. Press OK to proceed.")) {
-            sessionStorage.setItem("orderID", order.id);
-            await deleteOrdersWith(order.requestFrom, order.date);    
-          }
-      //     // }
-      //   }
-      //    else{
-      //         group.forEach(async (order) => {
-      //         // if (confirm("You are marking this item group as complete. Press OK to proceed.")) {
-      //         // await deleteDoc(doc(db, "invoices", order.id));
-      //         // }
-      //       });
-      //     }
-        // });
-        await showOrders();
+        if (confirm("You are marking this item as complete. Press OK to proceed.")) {
+          await deleteDoc(doc(db, "invoices", order.id));
+          showOrders();
+        }
       };
   
       orderTile.appendChild(seeInvoiceButton);
@@ -331,9 +289,7 @@ export const showOrders = async function () {
   
       return orderTile;
     }
-
-    // creates a track with all the duplicate orders of one group
-    // Shows one order at a time through a viewport 
+  
     function createOrderCarousel(group) {
   
       //buttons and viewport
@@ -383,14 +339,10 @@ export const showOrders = async function () {
   
       //moves track horizontally
       function update() {
-
-        console.log(index);
           const viewportWidth = viewport.offsetWidth;
-          track.style.transform = `translateX(-${index * 100}%)`;
-          // track.style.transform = `translateX(-200)`;
-          console.log(`translateX(-${index * 100}%)`);
+          track.style.transform = `translateX(-${index * viewportWidth}px)`;
+          
           const activeSlide = track.children[index];
-          // console.log(activeSlide);
           const inner = activeSlide.querySelector(".carouselSlideInner");
           viewport.style.height = inner.offsetHeight + "px";
   }
@@ -400,108 +352,71 @@ export const showOrders = async function () {
       viewport.className = "carouselViewport";
       //puts the track into the viewport
       viewport.appendChild(track);
-      carousel.appendChild(viewport);
+      
       
       carousel.appendChild(prev);
+      carousel.appendChild(viewport);
       carousel.appendChild(next);
   
       return carousel;
     }
   };
   
-  //Finds duplicates and deletes group or deletes the single order if no duplicates are found
-  export const deleteOrdersWith = async function(requestFrom, date){
+  export const createPDF = async function(){
     const orderID = sessionStorage.getItem("orderID");
     const docRef = doc(db, "invoices", orderID);
     const docSnap = await getDoc(docRef);
-    
-     //gets invoices from firebase
-    const ordersQuery = query(collection(db, "invoices"), where("date", "==", docSnap.data().date), where("requestFrom", "==", docSnap.data().requestFrom));
+  
+    const ordersQuery = query(
+      collection(db, "invoices"), 
+      where("date", "==", docSnap.data().date), 
+      where("requestFrom", "==", docSnap.data().requestFrom)
+    );
     const ordersSnapshot = await getDocs(ordersQuery);
   
-    for (const item of ordersSnapshot.docs) {
-      if (item.data().requestFrom == requestFrom && item.data().date == date) {
-      await deleteDoc(doc(db, "invoices", item.id));
-    }
-  }
-}
+    const pricesRef = doc(db, "prices", "prices");
+    const pricesSnap = await getDoc(pricesRef);
   
-  //pulls information for the order from Firebase and displays it on the invoice output page
-  export const createPDF = async function(){
+    const epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn;
+    const foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn;
+    const matPricePerSqIn = pricesSnap.data().matPricePerSqIn;
+    const inkPricePerSqIn = pricesSnap.data().inkPricePerSqIn;
   
-  const orderID = sessionStorage.getItem("orderID");
-    console.log(orderID);
-    
-    const docRef = doc(db,  "invoices", orderID);
-    const docSnap = await getDoc(docRef);
+    let USDollar = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+    let grandTotal = 0;
   
-   
-  
-  
-    //gets invoices from firebase
-    const ordersQuery = query(collection(db, "invoices"), where("date", "==", docSnap.data().date), where("requestFrom", "==", docSnap.data().requestFrom));
-    const ordersSnapshot = await getDocs(ordersQuery);
-  
-    //groups orders if they're duplicates
-    const orderGroups = {};
+    // Clear existing rows and make sure these columns exists in the HTML
+    document.getElementById("title").innerHTML = "";
+    document.getElementById("quantity").innerHTML = "";
+    document.getElementById("amount").innerHTML = ""; 
   
     ordersSnapshot.forEach((item) => {
-      const data = item.data();
-      console.log(item.data().bill);
-      const key = `${data.requestFrom}_${data.date}`;
+    const data = item.data();
   
-      //creates new array for that key if not a duplicate
-      if (!orderGroups[key]) {
-        orderGroups[key] = [];
+      // Set header info (same for all items in group)
+      document.getElementById("issued-to").innerHTML = data.bill;
+      document.getElementById("date").innerHTML = data.date;
+      document.getElementById("requested-by").innerHTML = data.requestFrom;
+  
+      // Calculate  price per items
+      let priceEach = 0;
+      if (data.mounting == "Foam Board") {
+        priceEach = data.width * data.height * (foamPricePerSqIn + inkPricePerSqIn + epsonPricePerSqIn);
+      } else if (data.mounting == "Mat Board") {
+        priceEach = data.width * data.height * (matPricePerSqIn + inkPricePerSqIn + epsonPricePerSqIn);
+      } else {
+        priceEach = data.width * data.height * (inkPricePerSqIn + epsonPricePerSqIn);
       }
   
-      orderGroups[key].push({
-        id: item.id,
-        title: data.title,
-        mounting: data.mounting,
-        width: data.width,
-        height: data.height, 
-        quantity: data.quantity,
-        description: data.description,
-        requestFrom: data.requestFrom, 
-        issuedTo: data.bill,
-        date: data.date
-      });
+      grandTotal += priceEach * data.quantity;
+  
+      // Add a row for each order item
+      document.getElementById("title").innerHTML += data.title + "<br>";
+      document.getElementById("quantity").innerHTML += data.quantity + "<br>";
+      document.getElementById("amount").innerHTML += USDollar.format(priceEach) + "<br>"; 
     });
   
-  
-    if(orderGroups.length == 1){
-      const issuedNameOutput = document.createElement("div");
-      issuedNameOutput.className = "issuedNameOutput";
-      const issuedName = document.getElementById("issued-to");
-      issuedName.innerHTML = docSnap.data().bill;
-      
-      const date = document.getElementById("date");
-      date.innerHTML = docSnap.data().date;
-  
-      const requested = document.getElementById("requested-by");
-      requested.innerHTML = docSnap.data().requestFrom;
-  
-      const title = document.getElementById("title");
-      title.innerHTML = docSnap.data().title;
-  
-      const qty = document.getElementById("quantity");
-      qty.innerHTML = docSnap.data().quantity;
-  
-    }
-    else{ 
-      Object.values(orderGroups).forEach(group =>{
-        console.log(group);
-        group.forEach((order) =>{
-          document.getElementById("issued-to").innerHTML = order.issuedTo;
-          document.getElementById("date").innerHTML = order.date;
-          document.getElementById("requested-by").innerHTML = order.requestFrom;
-          document.getElementById("title").innerHTML += order.title + "<br>";
-          document.getElementById("quantity").innerHTML += order.quantity + "<br>";
-  
-        });
-      });
-    } 
+    document.getElementById("total").innerHTML = USDollar.format(grandTotal);
   }
 
 
