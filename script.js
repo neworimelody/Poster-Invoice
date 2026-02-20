@@ -90,11 +90,14 @@ export const showPrices = async function(){
 }
 
 
+// This fucntion creates invoice entries in firebase based on form input values. It reads the first order fields from the form, then loops through
+// all elements like width or height and saves each as a separate invoice document
+// The fucntion stores the last document ID in sessionStorage and redirects to output.html.
 export const createInvoice = async function(){
     var inputs = document.getElementsByTagName("input");
     var descriptions = document.getElementsByTagName("textarea");
     console.log(inputs);
-    
+    //  Get the first order fields based on their ids except for the mounting
     var title = document.getElementById("title").value;
     var date = document.getElementById("date").value;
     var width = document.getElementById("width").value;
@@ -106,14 +109,14 @@ export const createInvoice = async function(){
     var bill = document.getElementById("bill").value;
     var requestFrom = document.getElementById("requestFrom").value;
     var description = document.getElementById("description").value;
-
+    // Determine mounting type for the first order
     if (isFoam){
         mounting = "Foam Board"
     }
     else if(isMat){
         mounting = "Mat Board"
     }
-
+    // Save the first order to firebase
     const docRef = await addDoc(collection(db, "invoices"),{
         title: title,
         date: date, 
@@ -125,7 +128,8 @@ export const createInvoice = async function(){
         requestFrom: requestFrom, 
         description: description,
     });
-
+    // Loop through all the rest of orders (starting at index 10, every 8 elements like title, width....)
+    var counter = 1;
     var counter = 1;
     for(var i = 10; i < inputs.length; i+=8){
         console.log(inputs[i].value);
@@ -138,7 +142,7 @@ export const createInvoice = async function(){
         else{
             mounting = "None"
         }
-    
+    // Save rest of  orders' elements to firebase
         const docRef = await addDoc(collection(db, "invoices"),{
             title: inputs[i].value,
             date: date, 
@@ -153,29 +157,32 @@ export const createInvoice = async function(){
         counter++;
 
     }
+    // Store the last order's id in sessionStorage and direct to the output page
     const docSnap = await getDoc(docRef);
     sessionStorage.setItem("orderID", docSnap.id);
     
     location.href = 'output.html';
 
 }
-
+// calculates the  total price for a group of orders sharing the same date and person as the current order stored in sessionStorage.
+// price is based on quantity, mounting type, and per-sq-inch rate from firebase. Then, displays total in the invoice page
 export const calculatePrice = async function() {
+  // Retrieve the current order from firebase using the id saved in sessionStorage
   const orderID = sessionStorage.getItem("orderID");
   const orderRef = doc(db, "invoices", orderID);
   const orderSnap = await getDoc(orderRef);
-
+  //get price rates from firebase
   const pricesRef = doc(db, "prices", "prices");
   const pricesSnap = await getDoc(pricesRef);
 
-  // get all the orders with the same date + requestFrom
+  // get all the orders with the same date + person
   const ordersQuery = query(
       collection(db, "invoices"),
       where("date", "==", orderSnap.data().date),
       where("requestFrom", "==", orderSnap.data().requestFrom)
   );
   const ordersSnapshot = await getDocs(ordersQuery);
-
+  // get individual price rates
   var epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn;
   var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn;
   var matPricePerSqIn = pricesSnap.data().matPricePerSqIn;
@@ -187,7 +194,7 @@ export const calculatePrice = async function() {
   ordersSnapshot.forEach((item) => {
       const data = item.data();
       var priceEach = 0;
-
+    // calculate price per unit based on mounting type and size
       if (data.mounting == "Foam Board") {
           priceEach = data.width * data.height * (foamPricePerSqIn + inkPricePerSqIn + epsonPricePerSqIn);
       } else if (data.mounting == "Mat Board") {
@@ -195,10 +202,10 @@ export const calculatePrice = async function() {
       } else {
           priceEach = data.width * data.height * (inkPricePerSqIn + epsonPricePerSqIn);
       }
-
+    // multiply by quantity and add to the total price
       grandTotal += priceEach * data.quantity;
   });
-
+  // format it to usd displaying
   let USDollar = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   document.getElementById("total").innerHTML = USDollar.format(grandTotal);
 }
