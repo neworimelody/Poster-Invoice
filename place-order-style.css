@@ -7,7 +7,8 @@ body{
 }
 h1{
     font-family: "Open Sans", sans-serif;
-    font-size: 200%;
+    font-size: 2.2rem;
+    font-weight: 600;
 }
 .rectangle {
     background-color: white;
@@ -27,7 +28,7 @@ ul {
     width: 100%;
     list-style-type: none;
     margin: 0;
-    padding: 15px;
+    padding: 20px;
     overflow: hidden;
     background-color: #ffffff;
     border-radius: 40px;
