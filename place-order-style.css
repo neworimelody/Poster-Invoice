@@ -53,14 +53,14 @@ ul {
   /* dashboard text/button hover effect */
   ul li a:hover {
     border-radius: 4px;
-    background-color: #c36464;
+    background-color: #B01111;
     color:#ffffff
   }
 
   /* dashboard text/button clicked effect */
   ul li a.active{
     border-radius: 4px;
-    background-color: #c36464;
+    background-color: #B01111;
     color:#ffffff
   }
 
