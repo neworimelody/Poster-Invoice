@@ -481,11 +481,36 @@ export const addToOrder = async function () {
 
     
     console.log("adding section");
-  
     var tile = document.createElement("div");
     tile.setAttribute("class", "rectangle");
-  
-    // first row
+    tile.style.position = "relative";
+   
+    var deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "x";
+    deleteBtn.setAttribute("type", "button");
+    deleteBtn.style = `
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 35px;
+      font-weight: bold;
+      color: black;
+      line-height: 1;
+      padding: 0;
+    `
+    deleteBtn.onclick = () => {
+      tile.remove();
+      // re show the last "Add to Order" button after this tile is gone
+      var remainingAddButtons = document.querySelectorAll("#add-to-order");
+      if (remainingAddButtons.length > 0) {
+        var lastBtn = remainingAddButtons[remainingAddButtons.length - 1];
+        lastBtn.parentElement.style.display = "";
+      }
+    };
+    tile.appendChild(deleteBtn);
+     // first row
     var firstRow = document.createElement("div");
     firstRow.setAttribute("class", "row");
   
