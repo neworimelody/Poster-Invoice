@@ -730,9 +730,9 @@ export const addToOrder = async function () {
       addToOrder();
     };
   
-    fifthRow.appendChild(submitBtn);
+    
     fifthRow.appendChild(addBtn);
+    fifthRow.appendChild(submitBtn);
   
-
     document.body.appendChild(tile);
   };
