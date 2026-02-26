@@ -92,27 +92,36 @@ export const showPrices = async function(){
 
 
 export const createInvoice = async function(){
+
     var inputs = document.getElementsByTagName("input");
     var descriptions = document.getElementsByTagName("textarea");
-    console.log(inputs);
-    
+
+    for(let i = 0; i < inputs.length; i++){
+
+        if(inputs[i].value.length === 0 && inputs[i].type !== "radio"){
+            alert("You have one or more empty fields.");
+            return;
+        }
+    }
+
     var title = document.getElementById("title").value;
     var date = document.getElementById("date").value;
     var width = document.getElementById("width").value;
     var height = document.getElementById("height").value;
     var isFoam = document.getElementById("foamBoard").checked;
     var isMat = document.getElementById("matBoard").checked;
-    var mounting = "None";
     var quantity = document.getElementById("quantity").value; 
     var bill = document.getElementById("bill").value;
     var requestFrom = document.getElementById("requestFrom").value;
     var description = document.getElementById("description").value;
 
+    var mounting = "None";
+
     if (isFoam){
-        mounting = "Foam Board"
+        mounting = "Foam Board";
     }
     else if(isMat){
-        mounting = "Mat Board"
+        mounting = "Mat Board";
     }
 
     const docRef = await addDoc(collection(db, "invoices"),{
@@ -127,39 +136,10 @@ export const createInvoice = async function(){
         description: description,
     });
 
-    var counter = 1;
-    for(var i = 10; i < inputs.length; i+=7){
-        console.log(inputs[i].value);
-        if (inputs[i+3].checked){
-            mounting = "Foam Board"
-        }
-        else if(inputs[i+4].checked){
-            mounting = "Mat Board"
-        }
-        else{
-            mounting = "None"
-        }
-    
-        const docRef = await addDoc(collection(db, "invoices"),{
-            title: inputs[i].value,
-            date: date, 
-            width: Number(inputs[i+1].value,), 
-            height: Number(inputs[i+2].value,), 
-            mounting: mounting,
-            quantity: Number(inputs[i+6].value,), 
-            bill: bill, 
-            requestFrom: requestFrom, 
-            description: descriptions[counter].value,
-        });
-        counter++;
-
-    }
-    const docSnap = await getDoc(docRef);
-    sessionStorage.setItem("orderID", docSnap.id);
-    
+    sessionStorage.setItem("orderID", docRef.id);
     location.href = 'output.html';
-
 }
+    
 
 export const calculatePrice = async function() {
   const orderID = sessionStorage.getItem("orderID");
@@ -486,19 +466,20 @@ export const addToOrder = async function () {
     tile.style.position = "relative";
    
     var deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "x";
+    deleteBtn.textContent = "X";
     deleteBtn.setAttribute("type", "button");
     deleteBtn.style = `
-      position: absolute;
       top: 8px;
       right: 10px;
-      background: none;
-      border: none;
+      position: absolute;
+      background: #B01111;
+      border-radius: 50%;
+      width: 40px;
       font-size: 35px;
-      font-weight: bold;
-      color: black;
+      font-weight: 600;
+      color: white;
       line-height: 1;
-      padding: 0;
+      padding: 2px;
     `
     deleteBtn.onclick = () => {
       tile.remove();
