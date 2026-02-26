@@ -16,7 +16,11 @@
         <script type="module" src="script.js"></script>
         <script type="module">
         import {createInvoice, addToOrder} from './script.js';
-        window.createInvoice = createInvoice;
+        document.getElementById("submitOrderForm")
+        .addEventListener("submit", async function(event){
+            event.preventDefault();
+            await createInvoice();
+        });
         window.addToOrder = addToOrder;
         // window.showItems = showItems;
   </script>
@@ -34,15 +38,15 @@
                 SUBMIT ORDER
             </h1>
             <hr class="solid">
-            
             <div class="row">
                 <div class="half">
-                <label class = "inputs">Title<span class="highlight">*</span></label>
+                <form id = submitOrderForm>
+                <label for = "title" class = "inputs">Title<span class="highlight">*</span></label>
                 <br>
-                <input class="row1Style1"  type = "text" id = "title"> 
+                <input class="row1Style1"  type = "text" id = "title" required>
                 </div>
                 <div class="half">
-                <label class = "inputs">Date Invoiced<span class="highlight">*</span></label>
+                <label class = "inputs">Date Invoiced<span class="highlight" required>*</span></label>
                 <br>
                 <input class="row1Style2" type = date id = "date">
                 </div>
@@ -52,11 +56,11 @@
             <div class = "row">
                 <div class = "half2">
                     <div><label class = "inputs">Width<span class="highlight">*</span></label></div>
-                    <div><input class="row2Style1" type = text id = "width"> in</div>
+                    <div><input class="row2Style1" type = text id = "width" required> in</div>
                 </div>
                 <div class = "half2">
                     <div><label class = "inputs">Height<span class="highlight">*</span></label></div>
-                    <div><input class="row2Style2"  type = text id = "height"> in</div>
+                    <div><input class="row2Style2"  type = text id = "height" required> in</div>
                 </div>
                 <div class = "half3">
                     <label class = "inputs">Mounting<span class="highlight">*</span></label>
@@ -72,15 +76,15 @@
             <div class = "row">
                 <div style = "width: 50%;" class = "half4">
                     <div><label class = "inputs">Quantity<span class="highlight">*</span></label></div>
-                    <div><input class="row3Style1"  type = text id = "quantity"></div>
+                    <div><input class="row3Style1"  type = text id = "quantity" required></div>
                 </div>
                 <div class = "half4">
                     <div><label class = "inputs">Bill To (Department)<span class="highlight">*</span></label></div>
-                    <div><input class="row3Style2"  type = text id = "bill"></div>
+                    <div><input class="row3Style2"  type = text id = "bill" required></div>
                 </div>
                 <div class = "half4">
                     <div><label class = "inputs">Requested By<span class="highlight">*</span></label></div>
-                    <div><input class="row3Style3"  type = text id = "requestFrom"></div>
+                    <div><input class="row3Style3"  type = text id = "requestFrom" required></div>
                 </div>
             </div>
             <br>
@@ -93,11 +97,13 @@
             </div>
             
             <div class = "row">
-                <button onclick="addToOrder()" id = "add-to-order"> Add to Order</button>
-                <button onclick= "createInvoice();" id = "submit-order"> Submit Order to Invoice</button>
+                <button type = "button" onclick="addToOrder()" id = "add-to-order"> Add to Order</button>
+                <button type="submit" id="submit-order"> Submit Order to Invoice</button>
+
                 
             </div>
         </div>
+        </form>
       
         </div>
     </body>
