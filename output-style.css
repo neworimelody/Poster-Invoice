@@ -82,3 +82,42 @@ hr.solid{
 #bill-to{
     font-size: 90%;
 }
+
+ul {
+  list-style-type: none;
+  margin: 12px auto 20px auto;          
+  padding: 20px 80px;         
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  width: fit-content;         
+  background-color: #ffffff;
+  border-radius: 40px;
+}
+
+ul li {
+  float: none; 
+}
+
+ul li a {
+  margin-left: 0; 
+  display: block;
+  color: rgb(8, 0, 0);
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+  /* dashboard text/button hover effect */
+  ul li a:hover {
+    border-radius: 4px;
+    background-color: #B01111;
+    color:#ffffff
+  }
+
+  @media print { 
+    .navbar { 
+        display: none;
+    } 
+}
+
