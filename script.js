@@ -1,4 +1,3 @@
-
 // Import Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 // TODO: import libraries for Cloud Firestore Database
@@ -91,39 +90,33 @@ export const showPrices = async function(){
 }
 
 
+// This fucntion creates invoice entries in firebase based on form input values. It reads the first order fields from the form, then loops through
+// all elements like width or height and saves each as a separate invoice document
+// The fucntion stores the last document ID in sessionStorage and redirects to output.html.
 export const createInvoice = async function(){
-
     var inputs = document.getElementsByTagName("input");
     var descriptions = document.getElementsByTagName("textarea");
-
-    for(let i = 0; i < inputs.length; i++){
-
-        if(inputs[i].value.length === 0 && inputs[i].type !== "radio"){
-            alert("You have one or more empty fields.");
-            return;
-        }
-    }
-
+    console.log(inputs);
+    //  Get the first order fields based on their ids except for the mounting
     var title = document.getElementById("title").value;
     var date = document.getElementById("date").value;
     var width = document.getElementById("width").value;
     var height = document.getElementById("height").value;
     var isFoam = document.getElementById("foamBoard").checked;
     var isMat = document.getElementById("matBoard").checked;
+    var mounting = "None";
     var quantity = document.getElementById("quantity").value; 
     var bill = document.getElementById("bill").value;
     var requestFrom = document.getElementById("requestFrom").value;
     var description = document.getElementById("description").value;
-
-    var mounting = "None";
-
+    // Determine mounting type for the first order
     if (isFoam){
-        mounting = "Foam Board";
+        mounting = "Foam Board"
     }
     else if(isMat){
-        mounting = "Mat Board";
+        mounting = "Mat Board"
     }
-
+    // Save the first order to firebase
     const docRef = await addDoc(collection(db, "invoices"),{
         title: title,
         date: date, 
@@ -135,28 +128,66 @@ export const createInvoice = async function(){
         requestFrom: requestFrom, 
         description: description,
     });
+    //Loop through all the rest of orders (starting at index 10, every 8 elements like title, width....)
+    var counter = 1;
+    var counter = 1;
+    for(var i = 10; i < inputs.length; i+=7){
+        console.log(inputs[i].value);
+        if (inputs[i+3].checked){
+            mounting = "Foam Board"
+        }
+        else if(inputs[i+4].checked){
+            mounting = "Mat Board"
+        }
+        else{
+            mounting = "None"
+        }
+    // Save rest of  orders' elements to firebase
+        const docRef = await addDoc(collection(db, "invoices"),{
+            title: inputs[i].value,
+            date: date, 
+            width: Number(inputs[i+1].value,), 
+            height: Number(inputs[i+2].value,), 
+            mounting: mounting,
+            quantity: Number(inputs[i+6].value,), 
+            bill: bill, 
+            requestFrom: requestFrom, 
+            description: descriptions[counter].value,
+        });
+        counter++;
 
-    sessionStorage.setItem("orderID", docRef.id);
-    location.href = 'output.html';
-}
+    }
+   // Get all order tiles (first + added ones)
+    // Store the last order's id in sessionStorage and direct to the output page
+    const docSnap = await getDoc(docRef);
+    sessionStorage.setItem("orderID", docSnap.id);
     
+    location.href = 'output.html';
 
+}
+
+
+
+// calculates the  total price for a group of orders sharing the same date and person as the current order stored in sessionStorage.
+// price is based on quantity, mounting type, and per-sq-inch rate from firebase. Then, displays total in the invoice page
 export const calculatePrice = async function() {
+
+  // Retrieve the current order from firebase using the id saved in sessionStorage
   const orderID = sessionStorage.getItem("orderID");
   const orderRef = doc(db, "invoices", orderID);
   const orderSnap = await getDoc(orderRef);
-
+  //get price rates from firebase
   const pricesRef = doc(db, "prices", "prices");
   const pricesSnap = await getDoc(pricesRef);
 
-  // get all the orders with the same date + requestFrom
+  // get all the orders with the same date + person
   const ordersQuery = query(
       collection(db, "invoices"),
       where("date", "==", orderSnap.data().date),
       where("requestFrom", "==", orderSnap.data().requestFrom)
   );
   const ordersSnapshot = await getDocs(ordersQuery);
-
+  // get individual price rates
   var epsonPricePerSqIn = pricesSnap.data().epsonPricePerSqIn;
   var foamPricePerSqIn = pricesSnap.data().foamPricePerSqIn;
   var matPricePerSqIn = pricesSnap.data().matPricePerSqIn;
@@ -168,7 +199,7 @@ export const calculatePrice = async function() {
   ordersSnapshot.forEach((item) => {
       const data = item.data();
       var priceEach = 0;
-
+    // calculate price per unit based on mounting type and size
       if (data.mounting == "Foam Board") {
           priceEach = data.width * data.height * (foamPricePerSqIn + inkPricePerSqIn + epsonPricePerSqIn);
       } else if (data.mounting == "Mat Board") {
@@ -176,13 +207,45 @@ export const calculatePrice = async function() {
       } else {
           priceEach = data.width * data.height * (inkPricePerSqIn + epsonPricePerSqIn);
       }
-
+    // multiply by quantity and add to the total price
       grandTotal += priceEach * data.quantity;
   });
-
+  // format it to usd displaying
   let USDollar = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   document.getElementById("total").innerHTML = USDollar.format(grandTotal);
+  return grandTotal;
 }
+
+export const applyDiscount= async function() {
+  const grandTotal = await calculatePrice();
+  const discountType = document.getElementById("discount-type").value;
+  const amountInput = document.getElementById("discount-amount").value;
+  var finalTotal=0;
+  if (amountInput === "" || isNaN(amountInput)) {
+    alert("Please enter a discount value");
+    return;
+  }
+  const value = parseFloat(amountInput);
+
+  if (discountType === "percent") {
+    finalTotal = grandTotal - (grandTotal * value / 100);
+  } 
+  else if (discountType === "dollar amount") {
+    finalTotal = grandTotal - value; 
+  }
+
+  if (finalTotal < 0) finalTotal = 0;
+
+  let USDollar = new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD' 
+  });
+  document.getElementById("total").textContent = USDollar.format(finalTotal);
+}
+
+
+
+
 export const showOrders = async function () {
 
     const orderID = sessionStorage.getItem("orderID");
@@ -437,9 +500,9 @@ export const showOrders = async function () {
       grandTotal += priceEach * data.quantity;
   
       // Add a row for each order item
-      document.getElementById("title").innerHTML += data.title + "<br>" + "<br>";
-      document.getElementById("quantity").innerHTML += data.quantity + "<br>"+ "<br>";
-      document.getElementById("amount").innerHTML += USDollar.format(priceEach) + "<br>"+ "<br>"; 
+      document.getElementById("title").innerHTML += data.title + "<br>";
+      document.getElementById("quantity").innerHTML += data.quantity + "<br>";
+      document.getElementById("amount").innerHTML += USDollar.format(priceEach) + "<br>"; 
     });
   
     document.getElementById("total").innerHTML = USDollar.format(grandTotal);
@@ -466,20 +529,19 @@ export const addToOrder = async function () {
     tile.style.position = "relative";
    
     var deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "X";
+    deleteBtn.textContent = "x";
     deleteBtn.setAttribute("type", "button");
     deleteBtn.style = `
+      position: absolute;
       top: 8px;
       right: 10px;
-      position: absolute;
-      background: #B01111;
-      border-radius: 50%;
-      width: 40px;
+      background: none;
+      border: none;
       font-size: 35px;
-      font-weight: 600;
-      color: white;
+      font-weight: bold;
+      color: black;
       line-height: 1;
-      padding: 2px;
+      padding: 0;
     `
     deleteBtn.onclick = () => {
       tile.remove();
@@ -491,10 +553,10 @@ export const addToOrder = async function () {
       }
     };
     tile.appendChild(deleteBtn);
-     // first row
+    // first row
     var firstRow = document.createElement("div");
     firstRow.setAttribute("class", "row");
-  
+
     var Half1 = document.createElement("div");
     Half1.setAttribute("class", "half");
     firstRow.appendChild(Half1);
@@ -736,9 +798,10 @@ export const addToOrder = async function () {
       addToOrder();
     };
   
-    
-    fifthRow.appendChild(addBtn);
     fifthRow.appendChild(submitBtn);
+    fifthRow.appendChild(addBtn);
   
+
     document.body.appendChild(tile);
   };
+
