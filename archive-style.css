@@ -1,0 +1,164 @@
+/* overall styling */
+body{ 
+    background-color: #f5f5f5;
+    font-family: "Open Sans", sans-serif;
+}
+
+#orders {
+  display: flex;
+  flex-wrap: wrap; 
+  flex-direction: row;
+  gap: 20px; 
+}
+
+/* styling for each order tile */
+.orderTile{
+  margin-top: 0;
+  display: flex;
+  flex-direction: column; 
+  align-items: flex-start;
+  padding: 20px;
+  font-size: 16px;
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  width: 300px; 
+  min-height: 70vh;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  font-weight: 200;
+}
+
+/* styling for text that shows up when no orders are present */
+.introduction
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+  ul {
+  list-style-type: none;
+  margin: 20px auto;          
+  padding: 20px 80px;         
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  width: fit-content;         
+  background-color: #ffffff;
+  border-radius: 40px;
+}
+
+ul li {
+  float: none; 
+}
+
+ul li a {
+  margin-left: 0; 
+  display: block;
+  color: rgb(8, 0, 0);
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+  /* dashboard text/button hover effect */
+  ul li a:hover {
+    border-radius: 4px;
+    background-color: #B01111;
+    color:#ffffff
+  }
+
+  /* dashboard text/button clicked effect */
+  ul li a.active{
+    border-radius: 4px;
+    background-color: #B01111;
+    color:#ffffff
+  }
+
+  /* order tile button styling (see invoice & mark complete) */
+  button{
+    display: block;
+    margin: 10px auto; /* centers horizontally */
+    padding: 12px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #B01111;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: all 0.5s ease;
+  }
+
+  /* order tile button hover styling (see invoice & mark complete) */
+  button:hover{
+    transform: scale(1.1) perspective(0.5px);
+    background-color: #c36464  
+  }
+
+  /* "ACTIVE INVOICES" styling */
+ header{
+  color: rgb(0, 0, 0);
+  padding: 20px;
+  font-weight: 600;
+  font-size: 2.2rem;
+ }
+/* main wrapper for carousel */
+.orderCarousel {
+  position: relative;
+  width: 340px; /* Adjust to fit your 300px tile + padding */
+  margin: 0 auto;
+}
+/* visible window of carousel */
+.carouselViewport {
+  overflow: hidden;
+  width: 100%; /* Ensure it fills the carousel container */
+}
+
+/* sliding track that holds all orders */
+.carouselTrack {
+  display: flex;
+  will-change: transform;
+  transition: transform 0.3s ease;
+}
+/* individual slide container */
+.carouselSlide {
+  flex: 0 0 100%; /* Fixes the width to 100% of the viewport */
+}
+
+/*inner wrapper for slide */
+.carouselSlideInner {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* prev/next button styling */
+.carouselBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #b71c1c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 100%;
+  z-index: 10;
+  margin: 0; 
+}
+
+/* pushes previous button to left */
+.carouselBtn.prev {
+  left: 0;
+}
+
+/* pushes next button to right */
+.carouselBtn.next {
+  right: 0;
+}
