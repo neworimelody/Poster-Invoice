@@ -26,7 +26,7 @@ body{
   box-sizing: border-box;
   width: 300px; 
   min-height: 70vh;
-  box-shadow: 2px 2px 3px #c3646436;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   font-weight: 200;
 }
 
@@ -92,12 +92,12 @@ ul li a {
     color: white;
     border: none;
     border-radius: 4px;
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
   }
 
   /* order tile button hover styling (see invoice & mark complete) */
   button:hover{
-    transform: scale(1.1) perspective(0.5px);
+    transform: scale(1) perspective(0.2px);
     background-color: #c36464  
   }
 
@@ -142,7 +142,7 @@ ul li a {
 .carouselBtn {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-20%);
   background: #b71c1c;
   color: white;
   border: none;
@@ -162,4 +162,5 @@ ul li a {
 .carouselBtn.next {
   right: 0;
 }
+
 
