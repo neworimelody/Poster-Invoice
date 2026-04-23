@@ -261,9 +261,10 @@ export const showOrders = async function () {
     orders.innerHTML = "";
   
     //gets invoices from firebase
-    const ordersQuery = query(collection(db, "invoices"));
+    
+    const ordersQuery = query(collection(db, "invoices"), where("isCompleted", "==", false));
     const ordersSnapshot = await getDocs(ordersQuery);
-  
+
     //groups orders if they're duplicates
     const orderGroups = {};
   
@@ -287,7 +288,8 @@ export const showOrders = async function () {
         description: data.description,
         requestFrom: data.requestFrom, 
         issuedTo: data.bill,
-        date: data.date
+        date: data.date,
+        isCompleted: data.isCompleted
       });
     });
 
@@ -303,6 +305,7 @@ export const showOrders = async function () {
     //into one rectangle with buttons that can delete the order from the database
     //and a button that, when pressed, will take the user to the invoice output
     //with additional information
+    
     function createOrderTile(order) {
       const orderTile = document.createElement("div");
       orderTile.className = "orderTile";
@@ -328,26 +331,17 @@ export const showOrders = async function () {
       console.log("orderGroups");
       console.log(orderGroups);
       markCompleteButton.onclick = async () => {
-          
-      // Object.values(orderGroups).forEach( async group => {
-      //   console.log("group");
-      //   console.log(group);
-      //   if(group.length == 1){
-      //     console.log("FOUND LIST OF 1");
           if (confirm("You are marking this/these item(s) as complete. Press OK to proceed.")) {
+            const ordersQuery = query(collection(db, "invoices"), where("date", "==", order.date), where("requestFrom", "==", order.requestFrom));
+            const ordersSnapshot = await getDocs(ordersQuery);
+            for (const item of ordersSnapshot.docs) {
+                await updateDoc(doc(db, "invoices", item.id), {
+                  isCompleted: true
+                });
+            }
+ 
             sessionStorage.setItem("orderID", order.id);
-            await deleteOrdersWith(order.requestFrom, order.date);    
           }
-      //     // }
-      //   }
-      //    else{
-      //         group.forEach(async (order) => {
-      //         // if (confirm("You are marking this item group as complete. Press OK to proceed.")) {
-      //         // await deleteDoc(doc(db, "invoices", order.id));
-      //         // }
-      //       });
-      //     }
-        // });
         await showOrders();
       };
   
@@ -433,6 +427,182 @@ export const showOrders = async function () {
       return carousel;
     }
   };
+
+  export const showArchive = async function(){
+
+
+    const orderID = sessionStorage.getItem("orderID");
+      console.log(orderID);
+  
+    const makeRow = (label, value) => {
+      const p = document.createElement("p");
+      p.innerHTML = `${label} ${value ?? ""}`;
+      return p;
+    };
+  
+    const orders = document.getElementById("orders");
+    orders.innerHTML = "";
+  
+    //gets invoices from firebase
+    
+    const ordersQuery = query(collection(db, "invoices"), where("isCompleted", "==", true));
+    const ordersSnapshot = await getDocs(ordersQuery);
+
+    //groups orders if they're duplicates
+    const orderGroups = {};
+  
+    ordersSnapshot.forEach((item) => {
+      const data = item.data();
+  
+      const key = `${data.requestFrom}_${data.date}`;
+  
+      //creates new array for that key if not a duplicate
+      if (!orderGroups[key]) {
+        orderGroups[key] = [];
+      }
+  
+      orderGroups[key].push({
+        id: item.id,
+        title: data.title,
+        mounting: data.mounting,
+        width: data.width,
+        height: data.height, 
+        quantity: data.quantity,
+        description: data.description,
+        requestFrom: data.requestFrom, 
+        issuedTo: data.bill,
+        date: data.date,
+        isCompleted: data.isCompleted
+      });
+    });
+
+    Object.values(orderGroups).forEach(group => {
+      if (group.length == 1) {
+        orders.appendChild(createOrderTile(group[0]));
+      } else {
+        orders.appendChild(createOrderCarousel(group));
+      }
+    });
+
+    //Compiles title, width, height, mounting, material, quantity, and any notes
+    //into one rectangle with buttons that can delete the order from the database
+    //and a button that, when pressed, will take the user to the invoice output
+    //with additional information
+    
+    function createOrderTile(order) {
+      const orderTile = document.createElement("div");
+      orderTile.className = "orderTile";
+  
+      orderTile.appendChild(makeRow("Order Name:", order.title));
+      orderTile.appendChild(makeRow("Width (in):", order.width));
+      orderTile.appendChild(makeRow("Height (in):", order.height));
+      orderTile.appendChild(makeRow("Mounting:", order.mounting));
+      orderTile.appendChild(makeRow("Quantity:", order.quantity));
+      orderTile.appendChild(makeRow("Notes:", order.description));
+  
+      const seeInvoiceButton = document.createElement("button");
+      seeInvoiceButton.innerHTML = "See Invoice";
+      seeInvoiceButton.className = "button";
+      seeInvoiceButton.onclick = () => {
+        sessionStorage.setItem("orderID", order.id);
+        location.href = "output.html";
+      };
+  
+      const markCompleteButton = document.createElement("button");
+      markCompleteButton.innerHTML = "Mark Complete";
+      markCompleteButton.className = "button";
+      console.log("orderGroups");
+      console.log(orderGroups);
+      markCompleteButton.onclick = async () => {
+          if (confirm("You are permenantly deleting this item. Press OK to proceed")) {
+            sessionStorage.setItem("orderID", order.id);
+            await deleteOrdersWith(order.requestFrom, order.date);   
+          }
+        await showArchive();
+      };
+  
+      orderTile.appendChild(seeInvoiceButton);
+      orderTile.appendChild(markCompleteButton);
+  
+      return orderTile;
+    }
+
+    // creates a track with all the duplicate orders of one group
+    // Shows one order at a time through a viewport 
+    function createOrderCarousel(group) {
+  
+      //buttons and viewport
+      const carousel = document.createElement("div");
+      carousel.className = "orderCarousel";
+  
+      //giant slide with all the "duplicate" orders
+      const track = document.createElement("div");
+      track.className = "carouselTrack";
+      
+  
+      group.forEach(order => {
+          //one slide per position
+          const slide = document.createElement("div");
+          slide.className = "carouselSlide";
+          
+          const inner = document.createElement("div");
+          inner.className = "carouselSlideInner";
+          
+          inner.appendChild(createOrderTile(order));
+          slide.appendChild(inner);
+          track.appendChild(slide);
+      });
+  
+      //current visible slide
+      let index = 0;
+  
+      //next/prev buttons
+  
+      const prev = document.createElement("button");
+      prev.innerHTML = "‹";
+      prev.className = "carouselBtn prev";
+      prev.onclick = () => {
+          //prevents from over sliding
+        index = Math.max(index - 1, 0);
+        update();
+      };
+  
+      const next = document.createElement("button");
+      next.innerHTML = "›";
+      next.className = "carouselBtn next";
+      next.onclick = () => {
+          //prevents from over sliding
+        index = Math.min(index + 1, group.length - 1);
+        update();
+      };
+  
+      //moves track horizontally
+      function update() {
+
+        console.log(index);
+          const viewportWidth = viewport.offsetWidth;
+          track.style.transform = `translateX(-${index * 100}%)`;
+          // track.style.transform = `translateX(-200)`;
+          console.log(`translateX(-${index * 100}%)`);
+          const activeSlide = track.children[index];
+          // console.log(activeSlide);
+          const inner = activeSlide.querySelector(".carouselSlideInner");
+          viewport.style.height = inner.offsetHeight + "px";
+  }
+  
+      //window shows one card at a time
+      const viewport = document.createElement("div");
+      viewport.className = "carouselViewport";
+      //puts the track into the viewport
+      viewport.appendChild(track);
+      carousel.appendChild(viewport);
+      
+      carousel.appendChild(prev);
+      carousel.appendChild(next);
+  
+      return carousel;
+    }
+  }
   
   //Finds duplicates and deletes group or deletes the single order if no duplicates are found
   export const deleteOrdersWith = async function(requestFrom, date){
@@ -511,7 +681,6 @@ export const showOrders = async function () {
 
 export const addToOrder = async function () {
     
-    
     // Make sure the mounting works
     var uid = Date.now(); 
     var mountingGroupName = "mounting_" + uid;
@@ -532,16 +701,18 @@ export const addToOrder = async function () {
     deleteBtn.textContent = "x";
     deleteBtn.setAttribute("type", "button");
     deleteBtn.style = `
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      background: none;
-      border: none;
-      font-size: 35px;
-      font-weight: bold;
-      color: black;
-      line-height: 1;
-      padding: 0;
+    top: 8px;
+     right: 10px;
+     position: absolute;
+     background: #B01111;
+     border-radius: 50%;
+     width: 40px;
+     font-size: 35px;
+     font-weight: 600;
+     color: white;
+     line-height: 1;
+     padding: 2px;
+
     `
     deleteBtn.onclick = () => {
       tile.remove();
@@ -798,10 +969,10 @@ export const addToOrder = async function () {
       addToOrder();
     };
   
-    fifthRow.appendChild(submitBtn);
+    
     fifthRow.appendChild(addBtn);
+    fifthRow.appendChild(submitBtn);
   
 
     document.body.appendChild(tile);
   };
-
