@@ -127,6 +127,7 @@ export const createInvoice = async function(){
         bill: bill, 
         requestFrom: requestFrom, 
         description: description,
+        isCompleted: false 
     });
     //Loop through all the rest of orders (starting at index 10, every 8 elements like title, width....)
     var counter = 1;
@@ -153,6 +154,7 @@ export const createInvoice = async function(){
             bill: bill, 
             requestFrom: requestFrom, 
             description: descriptions[counter].value,
+            isCompleted: false 
         });
         counter++;
 
@@ -244,8 +246,6 @@ export const applyDiscount= async function() {
 }
 
 
-
-
 export const showOrders = async function () {
 
     const orderID = sessionStorage.getItem("orderID");
@@ -256,6 +256,16 @@ export const showOrders = async function () {
       p.innerHTML = `${label} ${value ?? ""}`;
       return p;
     };
+
+    const snapshot = await getDocs(collection(db, "invoices"));
+
+for (const item of snapshot.docs) {
+  if (item.data().isCompleted === undefined) {
+    await updateDoc(doc(db, "invoices", item.id), {
+      isCompleted: false
+    });
+  }
+}
   
     const orders = document.getElementById("orders");
     orders.innerHTML = "";
@@ -289,9 +299,10 @@ export const showOrders = async function () {
         requestFrom: data.requestFrom, 
         issuedTo: data.bill,
         date: data.date,
-        isCompleted: data.isCompleted
       });
     });
+
+
 
     Object.values(orderGroups).forEach(group => {
       if (group.length == 1) {
@@ -305,10 +316,11 @@ export const showOrders = async function () {
     //into one rectangle with buttons that can delete the order from the database
     //and a button that, when pressed, will take the user to the invoice output
     //with additional information
-    
+
     function createOrderTile(order) {
       const orderTile = document.createElement("div");
       orderTile.className = "orderTile";
+
   
       orderTile.appendChild(makeRow("Order Name:", order.title));
       orderTile.appendChild(makeRow("Width (in):", order.width));
@@ -472,7 +484,6 @@ export const showOrders = async function () {
         requestFrom: data.requestFrom, 
         issuedTo: data.bill,
         date: data.date,
-        isCompleted: data.isCompleted
       });
     });
 
