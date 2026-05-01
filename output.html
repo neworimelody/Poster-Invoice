@@ -4,37 +4,26 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
         <title>Invoice PDF</title>
-        <link href="output-style.css" rel="stylesheet" type="text/css"/>
-        <link media="print" href="print.css"/>
+        <link href="output-style.css" rel="stylesheet" type="text/css" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Caprasimo&family=Gravitas+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playpen+Sans:wght@100..800&family=Rubik+Doodle+Shadow&family=Titan+One&family=Ysabeau+Infant:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
     </head>
-    
     <script type="module" src="script.js"></script>
         <script type="module">
-            import {checkLogin} from './script.js';
-        window.checkLogin = checkLogin;
-            checkLogin();
-        import {createPDF, calculatePrice} from './script.js';
+        import {createPDF, calculatePrice, applyDiscount} from './script.js';
         window.createPDF = createPDF;
         window.calculatePrice = calculatePrice;
+        window.applyDiscount = applyDiscount;
         createPDF();
         calculatePrice();
+     
     </script>
 
 <body>
     
     
     <center>
-
-        <ul class = "navbar">
-        <li><a href="index.html">Dashboard</a></li>
-        <li><a class = "active" href="place-order.html">Create Invoice</a></li>
-        <li><a href="admin.html">Admin</a></li>
-        <li><a href="archive.html">Archive</a></li>
-      </ul>
-      
 
 
     <div class = "orderPDF"> 
@@ -109,5 +98,35 @@
         <p id = total></p>
 
     </div>
+    
+    <hr class="solid">
+    <div class="row" style="margin-top: 20px;">
+ 
+    <div class="discount-section">
+        <div class="discount-row">
+          <span class="label">Subtotal</span>
+          <span id="total"></span>
+        </div>
+      
+        <p class="discount-hint">Apply discount</p>
+      
+        <div class="discount-controls">
+          <select id="discount-type">
+            <option value="percent">Percent (%)</option>
+            <option value="dollar amount">Dollar amount ($)</option>
+          </select>
+          <input type="number" id="discount-amount" placeholder="0" />
+          <button onclick="applyDiscount()">Apply discount</button>
+        </div>
+      
+        <div class="discount-final" id="final-row" >
+          <span>Final total</span>
+          <span id="final-total">34</span>
+        </div>
+      </div>
+
+
+
+
     </center>
 </body>
