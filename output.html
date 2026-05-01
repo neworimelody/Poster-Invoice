@@ -13,6 +13,9 @@
     
     <script type="module" src="script.js"></script>
         <script type="module">
+            import {checkLogin} from './script.js';
+        window.checkLogin = checkLogin;
+            checkLogin();
         import {createPDF, calculatePrice} from './script.js';
         window.createPDF = createPDF;
         window.calculatePrice = calculatePrice;
@@ -29,6 +32,7 @@
         <li><a href="index.html">Dashboard</a></li>
         <li><a class = "active" href="place-order.html">Create Invoice</a></li>
         <li><a href="admin.html">Admin</a></li>
+        <li><a href="archive.html">Archive</a></li>
       </ul>
       
 
