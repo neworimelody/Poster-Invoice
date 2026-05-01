@@ -14,6 +14,11 @@
     <body>
         <script type="module" src="script.js"></script>
         <script type="module">
+            import {checkLogin} from './script.js';
+        window.checkLogin = checkLogin;
+            checkLogin();
+            import {logout} from './script.js';
+        window.logout = logout;
         import {showOrders} from './script.js';
         window.showOrders = showOrders;
             showOrders();
@@ -31,6 +36,8 @@
       <header>
         <center>
             ACTIVE INVOICES
+                     <button onclick="logout()" id = "logout"> Logout</button>         
+
         </center>
       </header>
 
