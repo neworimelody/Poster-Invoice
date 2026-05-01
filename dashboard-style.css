@@ -163,4 +163,20 @@ ul li a {
   right: 0;
 }
 
+.editButton{
+  border-radius: 50%;
+  margin-left: 220px ;
+  padding: 0px 0px;
+  font-size: 25px;
+  color: #b71c1c;
+  background: #ffffff;
+}
+
+.editButton:hover{
+    transform: scale(1) perspective(0.2px);
+    color: #000000;
+    background: #ffffff;
+
+  }
+
 
