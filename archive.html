@@ -14,9 +14,12 @@
     <body>
         <script type="module" src="script.js"></script>
         <script type="module">
+            import {checkLogin} from './script.js';
+        window.checkLogin = checkLogin;
+            checkLogin();
         import {showArchive} from './script.js';
         window.showArchive = showArchive;
-            showArchive()
+            showArchive();
 
   </script>
 
