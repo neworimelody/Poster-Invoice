@@ -2,7 +2,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 // TODO: import libraries for Cloud Firestore Database
 // https://firebase.google.com/docs/firestore
+
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHr1JjEk-uhcZizVy4AuKCIwcO5hpdxFY",
@@ -16,6 +20,39 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+//logs in a user and redirects them to the dashboard page
+export const login = function (email, password){
+  signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    location.replace('index.html');
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message; 
+    return errorCode
+  });
+}
+//makes sure login page cannot be bypassed - forces user to login page if not signed in already
+export const checkLogin = async function(){
+  console.log("checking that the user is logged in")
+  auth.onAuthStateChanged((user) => {
+    console.log(user);
+    if(!user){
+      //user is not signed in; redirect to login page
+      window.location.href = "login.html"; //adjust the path as needed
+    }
+  });
+}
+//signs out the user
+export const logout = () => {
+  signOut(auth).then(() =>{
+    console.log("User signed out"); 
+    document.getElementById("userInfo").innerText = "Not signed in";
+  });
+}
 
 export const addPrice = async function(){
     var epsonWidth = document.getElementById("epson-width").value;
@@ -97,6 +134,14 @@ export const createInvoice = async function(){
     var inputs = document.getElementsByTagName("input");
     var descriptions = document.getElementsByTagName("textarea");
     console.log(inputs);
+
+     for(let i = 0; i < inputs.length; i++){
+
+        if(inputs[i].value.length === 0 && inputs[i].type !== "radio"){
+            alert("You have one or more empty fields.");
+            return;
+        }
+    }
     //  Get the first order fields based on their ids except for the mounting
     var title = document.getElementById("title").value;
     var date = document.getElementById("date").value;
@@ -259,6 +304,9 @@ export const showOrders = async function () {
 
     const snapshot = await getDocs(collection(db, "invoices"));
 
+
+//gives order the incomplete status which will allow it to show on the dashboard
+//instead of the archive
 for (const item of snapshot.docs) {
   if (item.data().isCompleted === undefined) {
     await updateDoc(doc(db, "invoices", item.id), {
@@ -270,7 +318,7 @@ for (const item of snapshot.docs) {
     const orders = document.getElementById("orders");
     orders.innerHTML = "";
   
-    //gets invoices from firebase
+    //gets incompleted invoices from firebase
     
     const ordersQuery = query(collection(db, "invoices"), where("isCompleted", "==", false));
     const ordersSnapshot = await getDocs(ordersQuery);
@@ -313,15 +361,24 @@ for (const item of snapshot.docs) {
     });
 
     //Compiles title, width, height, mounting, material, quantity, and any notes
-    //into one rectangle with buttons that can delete the order from the database
-    //and a button that, when pressed, will take the user to the invoice output
+    //into one rectangle with buttons that can remove the order from the dasboard page
+    //and move it to the archive page and a button that, when pressed, will take the user to the invoice output
     //with additional information
 
     function createOrderTile(order) {
+
+      const editInvoiceButton = document.createElement("button");
+      editInvoiceButton.innerHTML = "✎"
+      editInvoiceButton.className = "editButton";
+      editInvoiceButton.onclick = () => {
+        sessionStorage.setItem("orderID", order.id);
+        location.href = "place-order.html";
+      }
+      
       const orderTile = document.createElement("div");
       orderTile.className = "orderTile";
 
-  
+      orderTile.appendChild(editInvoiceButton);
       orderTile.appendChild(makeRow("Order Name:", order.title));
       orderTile.appendChild(makeRow("Width (in):", order.width));
       orderTile.appendChild(makeRow("Height (in):", order.height));
@@ -348,7 +405,8 @@ for (const item of snapshot.docs) {
             const ordersSnapshot = await getDocs(ordersQuery);
             for (const item of ordersSnapshot.docs) {
                 await updateDoc(doc(db, "invoices", item.id), {
-                  isCompleted: true
+                  isCompleted: true //turns order incomplete status to true
+                  //order is now completed and removed from the main dashboard
                 });
             }
  
@@ -356,7 +414,6 @@ for (const item of snapshot.docs) {
           }
         await showOrders();
       };
-  
       orderTile.appendChild(seeInvoiceButton);
       orderTile.appendChild(markCompleteButton);
   
@@ -440,6 +497,7 @@ for (const item of snapshot.docs) {
     }
   };
 
+  //shows completed (past) invoices in archive which can be later deleted permenantly 
   export const showArchive = async function(){
 
 
@@ -520,7 +578,7 @@ for (const item of snapshot.docs) {
       };
   
       const markCompleteButton = document.createElement("button");
-      markCompleteButton.innerHTML = "Mark Complete";
+      markCompleteButton.innerHTML = "Delete Permenantly";
       markCompleteButton.className = "button";
       console.log("orderGroups");
       console.log(orderGroups);
@@ -715,15 +773,14 @@ export const addToOrder = async function () {
     top: 8px;
      right: 10px;
      position: absolute;
-     background: #B01111;
+     background: #ffffff;
      border-radius: 50%;
-     width: 40px;
-     font-size: 35px;
+     width: 30px;
+     font-size: 30px;
      font-weight: 600;
-     color: white;
+     color: #b71c1c;
      line-height: 1;
      padding: 2px;
-
     `
     deleteBtn.onclick = () => {
       tile.remove();
