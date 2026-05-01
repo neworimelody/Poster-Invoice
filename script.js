@@ -217,6 +217,8 @@ export const createInvoice = async function(){
 
 // calculates the  total price for a group of orders sharing the same date and person as the current order stored in sessionStorage.
 // price is based on quantity, mounting type, and per-sq-inch rate from firebase. Then, displays total in the invoice page
+// calculates the  total price for a group of orders sharing the same date and person as the current order stored in sessionStorage.
+// price is based on quantity, mounting type, and per-sq-inch rate from firebase. Then, displays total in the invoice page
 export const calculatePrice = async function() {
 
   // Retrieve the current order from firebase using the id saved in sessionStorage
@@ -264,6 +266,7 @@ export const calculatePrice = async function() {
 }
 
 export const applyDiscount= async function() {
+  const orderID = sessionStorage.getItem("orderID");
   const grandTotal = await calculatePrice();
   const discountType = document.getElementById("discount-type").value;
   const amountInput = document.getElementById("discount-amount").value;
@@ -282,12 +285,19 @@ export const applyDiscount= async function() {
   }
 
   if (finalTotal < 0) finalTotal = 0;
+ 
+  const orderDoc = doc(db, "invoices", orderID);
+  await updateDoc(orderDoc, {
+    discountType: discountType,
+    discountAmount: value,
+  });
 
   let USDollar = new Intl.NumberFormat('en-US', { 
     style: 'currency', 
     currency: 'USD' 
   });
-  document.getElementById("total").textContent = USDollar.format(finalTotal);
+  document.getElementById("final-total").textContent = USDollar.format(finalTotal);
+  document.getElementById("final-row").style.display = "flex";
 }
 
 
@@ -691,6 +701,7 @@ for (const item of snapshot.docs) {
 }
   
   export const createPDF = async function(){
+    console.log("hi")
     const orderID = sessionStorage.getItem("orderID");
     const docRef = doc(db, "invoices", orderID);
     const docSnap = await getDoc(docRef);
@@ -745,6 +756,29 @@ for (const item of snapshot.docs) {
     });
   
     document.getElementById("total").innerHTML = USDollar.format(grandTotal);
+  
+    const savedDiscountType = docSnap.data().discountType;
+    const savedDiscountAmount = docSnap.data().discountAmount;
+
+    if (savedDiscountType && savedDiscountAmount) {
+      let finalTotal = 0;
+
+      if (savedDiscountType === "percent") {
+        finalTotal = grandTotal - (grandTotal * savedDiscountAmount / 100);
+      } else if (savedDiscountType === "dollar amount") {
+        finalTotal = grandTotal - savedDiscountAmount;
+      }
+
+      if (finalTotal < 0) finalTotal = 0;
+
+      // make sure the type and amount are same everytime when they open it
+      document.getElementById("discount-type").value = savedDiscountType;
+      document.getElementById("discount-amount").value = savedDiscountAmount;
+
+      document.getElementById("final-total").textContent = USDollar.format(finalTotal);
+      document.getElementById("final-row").style.display = "flex";
+    }
+
   }
 
 
