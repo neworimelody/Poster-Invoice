@@ -154,6 +154,7 @@ export const createInvoice = async function(){
     var bill = document.getElementById("bill").value;
     var requestFrom = document.getElementById("requestFrom").value;
     var description = document.getElementById("description").value;
+    var budgetCode = document.getElementById("budgetCode").value;
     // Determine mounting type for the first order
     if (isFoam){
         mounting = "Foam Board"
@@ -162,22 +163,47 @@ export const createInvoice = async function(){
         mounting = "Mat Board"
     }
     // Save the first order to firebase
-    const docRef = await addDoc(collection(db, "invoices"),{
+    const existingOrderID = sessionStorage.getItem("orderID");
+
+let docRef;
+
+if (existingOrderID) {
+
+    docRef = doc(db, "invoices", existingOrderID);
+
+    await updateDoc(docRef, {
         title: title,
-        date: date, 
-        width: Number(width), 
-        height: Number(height), 
+        date: date,
+        width: Number(width),
+        height: Number(height),
         mounting: mounting,
-        quantity: Number(quantity), 
-        bill: bill, 
-        requestFrom: requestFrom, 
+        quantity: Number(quantity),
+        bill: bill,
+        requestFrom: requestFrom,
         description: description,
-        isCompleted: false 
+        budgetCode: budgetCode
     });
-    //Loop through all the rest of orders (starting at index 10, every 8 elements like title, width....)
+
+} else {
+
+    docRef = await addDoc(collection(db, "invoices"),{
+        title: title,
+        date: date,
+        width: Number(width),
+        height: Number(height),
+        mounting: mounting,
+        quantity: Number(quantity),
+        bill: bill,
+        requestFrom: requestFrom,
+        description: description,
+        budgetCode: budgetCode,
+        isCompleted: false
+    });
+}
+    //Loop through all the rest of orders (starting at index 11, every 8 elements like title, width....)
     var counter = 1;
     var counter = 1;
-    for(var i = 10; i < inputs.length; i+=7){
+    for(var i = 11; i < inputs.length; i+=7){
         console.log(inputs[i].value);
         if (inputs[i+3].checked){
             mounting = "Foam Board"
@@ -199,6 +225,7 @@ export const createInvoice = async function(){
             bill: bill, 
             requestFrom: requestFrom, 
             description: descriptions[counter].value,
+            budgetCode: budgetCode,
             isCompleted: false 
         });
         counter++;
@@ -206,8 +233,7 @@ export const createInvoice = async function(){
     }
    // Get all order tiles (first + added ones)
     // Store the last order's id in sessionStorage and direct to the output page
-    const docSnap = await getDoc(docRef);
-    sessionStorage.setItem("orderID", docSnap.id);
+    sessionStorage.setItem("orderID", docRef.id);
     
     location.href = 'output.html';
 
@@ -357,6 +383,7 @@ for (const item of snapshot.docs) {
         requestFrom: data.requestFrom, 
         issuedTo: data.bill,
         date: data.date,
+        budgetCode: data.budgetCode
       });
     });
 
@@ -701,7 +728,6 @@ for (const item of snapshot.docs) {
 }
   
   export const createPDF = async function(){
-    console.log("hi")
     const orderID = sessionStorage.getItem("orderID");
     const docRef = doc(db, "invoices", orderID);
     const docSnap = await getDoc(docRef);
@@ -736,6 +762,7 @@ for (const item of snapshot.docs) {
       document.getElementById("issued-to").innerHTML = data.bill;
       document.getElementById("date").innerHTML = data.date;
       document.getElementById("requested-by").innerHTML = data.requestFrom;
+      document.getElementById("budget-code").innerHTML = data.budgetCode;
   
       // Calculate  price per items
       let priceEach = 0;
@@ -1078,3 +1105,40 @@ export const addToOrder = async function () {
 
     document.body.appendChild(tile);
   };
+
+  //Checks for exisitng invoices then loads in the data of that invoice into the 
+  //text input slots in creating invoice when called in place-order.html
+  //allowing the user to edit said input
+  export const loadEdit = async function () {
+
+  const orderID = sessionStorage.getItem("orderID");
+
+  if (!orderID) return;
+
+  const docRef = doc(db, "invoices", orderID);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) return;
+
+  const data = docSnap.data();
+
+  document.getElementById("title").value = data.title;
+  document.getElementById("date").value = data.date;
+  document.getElementById("width").value = data.width;
+  document.getElementById("height").value = data.height;
+  document.getElementById("quantity").value = data.quantity;
+  document.getElementById("bill").value = data.bill;
+  document.getElementById("budgetCode").value = data.budgetCode;
+  document.getElementById("requestFrom").value = data.requestFrom;
+  document.getElementById("description").value = data.description;
+
+  if (data.mounting === "Foam Board") {
+    document.getElementById("foamBoard").checked = true;
+  }
+  else if (data.mounting === "Mat Board") {
+    document.getElementById("matBoard").checked = true;
+  }
+  else {
+    document.getElementById("none").checked = true;
+  }
+}
